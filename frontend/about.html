@@ -18,6 +18,12 @@
     ul {
       list-style-type: none;
     }
+
+    .accordion {
+      --bs-accordion-active-color: black;
+      --bs-accordion-active-bg: #ced4da;
+      --bs-accordion-border-color: black
+    }
   </style>
 
   <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark-subtle">
@@ -67,7 +73,7 @@
         <li class="list-group-item"><strong>Group Name: </strong></li>
         <li class="list-group-item">
           <strong>Group Members: </strong>
-          <div class="accordion" id="accordionPanelsStayOpenExample">
+          <div class="accordion pt-4" id="accordionPanelsStayOpenExample">
             <div class="accordion-item">
               <h2 class="accordion-header">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -181,7 +187,7 @@
           </div>
         </li>
         <li class="list-group-item"><strong>Stats: </strong>
-          <ul>
+          <ul class="pt-4">
             <li>Total No. of Commits: </li>
             <li>Total No. of Issues: </li>
             <li>Total No. of Unit Tests: </li>
@@ -193,7 +199,7 @@
         </li>
 
         <li class="list-group-item"><strong>Data: </strong>
-          <ul>
+          <ul class="pt-4">
             <li>Data Sources Link: </li>
             <li>Published Postman Collection: </li>
             <li>Description: </li>
@@ -201,7 +207,7 @@
         </li>
 
         <li class="list-group-item"><strong>Tools: </strong>
-          <ul>
+          <ul class="pt-4">
             <li>Tools Used: </li>
           </ul>
         </li>
