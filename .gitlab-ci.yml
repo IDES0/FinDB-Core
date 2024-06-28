@@ -32,9 +32,9 @@ test:
 
 run:
   script:
-    - pip install .
+    - pip install -r ./requirements.txt
     # run the command here
-    - python main.py
+    - python ./backend/stock_data.py
   artifacts:
     paths:
       - build/*
