@@ -23,33 +23,34 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
+  - pip install -r ./requirements.txt
 
 # test:
 #   script:
-#     - pip install ruff tox  # you can also use tox
-#     - pip install --editable ".[test]"
-#     - tox -e py,ruff
+#     - python -m coverage run -m ./tests/backend.py
+#     - coverage html
+#   artifacts:
+#         paths:
+#             - htmlcov/
+
+# pages:
+#     stage: deploy
+#     dependencies:
+#         - test
+#     script:
+#         - mv htmlcov/ public/
+#     artifacts:
+#         paths:
+#             - public/
 
 run:
   script:
-    - pip install -r ./requirements.txt
     # run the command here
     - python ./backend/stock_data.py
   artifacts:
     paths:
       - build/*
 
-# pages:
-#   script:
-#     - pip install sphinx sphinx-rtd-theme
-#     - cd doc
-#     - make html
-#     - mv build/html/ ../public/
-#   artifacts:
-#     paths:
-#       - public
-#   rules:
-#     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 # deploy:
 #   stage: deploy
