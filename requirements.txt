@@ -2,4 +2,3 @@ yfinance
 pandas
 Flask
 yahooquery
-json
