@@ -71,6 +71,14 @@ def scrape_sector_data(sector_url):
             if "1Y Target Est." in df.columns and "Avg. Analyst Rating" in df.columns:
                 df = df.drop(columns=["1Y Target Est.", "Avg. Analyst Rating"])
             table_data = df.to_dict(orient='records')
+            
+            # splitting ticker and name from each other, wont format correctly yet
+            for row in table_data:
+                name_parts = row["Name"].split(' ', 1)
+                if len(name_parts) == 2:
+                    ticker, name = name_parts
+                    row["Name"] = name
+                    row["Ticker"] = ticker
     
     industries = scrape_industry(soup)
     etf_opportunities = scrape_etf_opportunities(soup)
@@ -96,7 +104,7 @@ def main():
     output_file = os.path.join(output_dir, 'sector_data.json')
     with open(output_file, 'w') as json_file:
         json.dump(all_data, json_file, indent=4)
-    print(f"chek {output_file}")
+    print(f"Data has been successfully scraped and saved to {output_file}")
 
 if __name__ == "__main__":
     main()
