@@ -12,13 +12,13 @@ def hello_world():
 @app.get("/api/<name>")
 def get_resource(name):
     if name == "sector":
-         return f"Get {name} received"
+      return f"Get {name} received"
     elif name == "index":
-         return f"Get {name} received" 
+      return f"Get {name} received" 
     elif name == "stock":
-         return f"Get {name} received" 
+      return f"Get {name} received" 
     else:
-        return error_msg
+      return error_msg
 
 
 # POST
