@@ -41,7 +41,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="industry-model.html">Industry</a></li>
+                            <li><a class="dropdown-item" href="sector-model.html">Sector</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -60,14 +60,17 @@
             </div>
         </div>
         <div class="row align-items-start">
-            <table id="model-table" class="table table-secondary">
-                <script src="../frontend/displaymodel.js" idname="model-table" data='[
+            <table id="stock-model" class="table table-secondary">
+                <script src="../frontend/display-model.js" idname="stock-model" data='[
                 {
                     "Ticker": "AAPL",
                     "Full Name": "Apple Inc.",
+                    "Current Price": 210.62,
+                    "Market Cap": "3.23T",
+                    "Industry": "Consumer Electronics",
+                    "Sector Key": "technology",
+                    "Top 10 Indexes": ["Vanguard Total Stock Market Index Fund", "Vanguard 500 Index Fund", "Fidelity 500 Index Fund", "SPDR S&P 500 ETF Trust", "iShares Core S&P 500 ETF", "Vanguard Growth Index Fund", "Invesco ETF Tr-Invesco QQQ Tr, Series 1 ETF", "Vanguard Institutional Index Fund-Institutional Index Fund", "Vanguard Information Technology Index Fund", "Select Sector SPDR Fund-Technology"],
                     "Last 30 Days Prices": [
-                        189.95,
-                        191.02,
                         191.85,
                         193.46,
                         194.5,
@@ -86,18 +89,19 @@
                         207.93,
                         209.11,
                         212.38,
-                        214.4
-                    ],
-                    "Current Price": 213.1822052001953,
-                    "Market Cap": 3268957175808,
-                    "Sector": "Consumer Electronics"
+                        214.4,
+                        213.19
+                    ]
                 },
                 {
                     "Ticker": "NVDA",
                     "Full Name": "NVIDIA Corporation",
+                    "Current Price": 123.54,
+                    "Market Cap": "3.04T",
+                    "Industry": "Semiconductors",
+                    "Sector Key": "technology",
+                    "Top 10 Indexes": ["Vanguard Total Stock Market Index Fund", "Vanguard 500 Index Fund", "Fidelity 500 Index Fund", "SPDR S&P 500 ETF Trust", "iShares Core S&P 500 ETF", "Vanguard Growth Index Fund", "Invesco ETF Tr-Invesco QQQ Tr, Series 1 ETF", "Vanguard Institutional Index Fund-Institutional Index Fund", "Fidelity Growth Company Fund", "Fidelity Contrafund Inc"],
                     "Last 30 Days Prices": [
-                        113.93,
-                        112.57,
                         111.07,
                         114.3,
                         116.07,
@@ -116,18 +120,19 @@
                         120.67,
                         123.64,
                         126.26,
-                        124.04
-                    ],
-                    "Current Price": 124.1050033569336,
-                    "Market Cap": 3052157272064,
-                    "Sector": "Semiconductors"
+                        124.04,
+                        124.06
+                    ]
                 },
                 {
                     "Ticker": "MSFT",
                     "Full Name": "Microsoft Corporation",
+                    "Current Price": 446.95,
+                    "Market Cap": "3.32T",
+                    "Industry": "Software - Infrastructure",
+                    "Sector Key": "technology",
+                    "Top 10 Indexes": ["Vanguard Total Stock Market Index Fund", "Vanguard 500 Index Fund", "Fidelity 500 Index Fund", "SPDR S&P 500 ETF Trust", "iShares Core S&P 500 ETF", "Vanguard Growth Index Fund", "Invesco ETF Tr-Invesco QQQ Tr, Series 1 ETF", "Vanguard Institutional Index Fund-Institutional Index Fund", "Growth Fund Of America Inc", "Vanguard Information Technology Index Fund"],
                     "Last 30 Days Prices": [
-                        427.43,
-                        419.49,
                         415.94,
                         414.52,
                         414.25,
@@ -146,11 +151,9 @@
                         448.74,
                         449.6,
                         450.58,
-                        452.51
-                    ],
-                    "Current Price": 453.0,
-                    "Market Cap": 3366836240384,
-                    "Sector": "Software - Infrastructure"
+                        452.51,
+                        450.01
+                    ]
                 }
             ]'> </script>
             </table>
