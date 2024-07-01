@@ -5,3 +5,4 @@ yahooquery
 requests
 bs4
 gunicorn
+flask-SQLAlchemy
