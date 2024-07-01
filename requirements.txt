@@ -2,4 +2,5 @@ yfinance
 pandas
 Flask
 yahooquery
-gunicorn
+requests
+bs4
