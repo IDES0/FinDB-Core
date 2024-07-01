@@ -1,13 +1,31 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
 error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
 
 @app.route("/")
-def hello_world():
-    return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
+@app.route("/index.html")
+@app.route("/index.html#")
+def index():
+    return render_template('index.html')
+    # return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
 
+@app.route("/about.html")
+def about():
+   return render_template('about.html')
+
+@app.route("/stock-model.html")
+def stock():
+   return render_template('stock-model.html')
+
+@app.route("/sector-model.html")
+def sector():
+   return render_template('sector-model.html')
+
+@app.route("/index-model.html")
+def index_m():
+   return render_template('index-model.html')
 # GET
 @app.get("/api/<name>")
 def get_resource(name):
