@@ -59,6 +59,6 @@ def delete_resource(name):
     else:
       return error_msg
 
-
+# host='0.0.0.0' to make the server publicly available. 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
