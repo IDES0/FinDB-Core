@@ -64,6 +64,7 @@ def scrape_sector_data(sector_url):
     table_section = soup.find('section', class_="container svelte-ekgvwx", attrs={"data-testid": "largest-companies"})
     table_data = []
     
+    # Reads each of the tables and grabs the items
     if table_section:
         table = table_section.find('table')
         if table:
@@ -102,9 +103,9 @@ def main():
     output_dir = 'backend/json'
     os.makedirs(output_dir, exist_ok=True)
     output_file = os.path.join(output_dir, 'sector_data.json')
+    
     with open(output_file, 'w') as json_file:
         json.dump(all_data, json_file, indent=4)
-    print(f"Data has been successfully scraped and saved to {output_file}")
 
 if __name__ == "__main__":
     main()
