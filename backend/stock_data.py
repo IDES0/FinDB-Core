@@ -37,6 +37,7 @@ def get_sector_key(ticker):
 
 def get_top_ten_index(ticker):
     fund_ownership = ticker.fund_ownership
+    
     if fund_ownership is not None:
         top_ten = fund_ownership.head(10)
         top_ten_list = top_ten[['organization']].copy()

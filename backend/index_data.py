@@ -32,6 +32,7 @@ def get_historical(ticker, days):
 def get_top_ten_stock(ticker):
     holdings = ticker.fund_top_holdings
     holdings_list = []
+    
     for i in range(len(holdings)):
         holding = {
             'symbol': holdings.iloc[i]['symbol'],
@@ -84,7 +85,6 @@ def get_index_data(symbol):
 # Just for testing, will be put onto flask api later
 def main(symbols):
     all_data = []
-
     for symbol in symbols:
         row = get_index_data(symbol)
         all_data.append(row)
