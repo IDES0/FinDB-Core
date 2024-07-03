@@ -1,8 +1,16 @@
 from flask import Flask, jsonify, request, render_template
+from flask_sqlalchemy import SQLAlchemy
+from create_db import app, db, Stock, Index, Sector
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
+
+@app.route('/dbtest')
+def test_db():
+   Stock()
+
+   return {"message": "test"}, 200
 
 @app.route("/")
 @app.route("/index.html")
@@ -26,6 +34,7 @@ def sector():
 @app.route("/index-model.html")
 def index_m():
    return render_template('index-model.html')
+
 # GET
 @app.get("/api/<name>")
 def get_resource(name):
