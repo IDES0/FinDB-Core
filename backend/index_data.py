@@ -4,20 +4,18 @@ import pandas as pd
 import os
 import json
 import yahooquery as yq
+from create_db import app, db, ETF, Sector, Stock
 
-# Full Name
+# Helper functions
 def get_name(ticker):
     return ticker.info.get('longName')
 
-# Current Stock Price
 def get_price(ticker):
     return round(ticker.info.get('navPrice'), 2)
 
-# Market Cap/Total Assets
 def get_total_assets(ticker):
     return format_number(ticker.info.get('totalAssets'))
 
-# Gets the prices for past days
 def get_historical(ticker, days):
     start_date = date.today() - timedelta(days)
     end_date = date.today()
@@ -28,11 +26,9 @@ def get_historical(ticker, days):
     else:
         return []
 
-# Top ten holdings
 def get_top_ten_stock(ticker):
     holdings = ticker.fund_top_holdings
     holdings_list = []
-    
     for i in range(len(holdings)):
         holding = {
             'symbol': holdings.iloc[i]['symbol'],
@@ -42,10 +38,12 @@ def get_top_ten_stock(ticker):
         holdings_list.append(holding)
     return holdings_list
 
-# Top sectors
 def get_top_sectors(ticker):
     sectors = ticker.fund_sector_weightings
-    return sectors.to_dict()
+    sectors_list = []
+    for sector, weight in sectors.items():
+        sectors_list.append({'sector': sector, 'weight': weight})
+    return sectors_list
 
 def format_number(num):
     if num is None:
@@ -61,7 +59,6 @@ def format_number(num):
     else:
         return str(num)
 
-# Gets the stock data needed for one stock
 def get_index_data(symbol):
     yq_ticker = yq.Ticker(symbol)
     yf_ticker = yf.Ticker(symbol)
@@ -71,30 +68,38 @@ def get_index_data(symbol):
     name = get_name(yf_ticker)
     top_stocks = get_top_ten_stock(yq_ticker)
     top_sectors = get_top_sectors(yq_ticker)
-    row = {
-        'Ticker': symbol,
-        'Full Name': name,
-        'Current Price': cur_price,
-        'Total Assets': total_assets,
-        'Top Sectors': top_sectors,
-        'Top Ten Holdings': top_stocks,
-        'Last 30 Days Prices': past_prices,
-    }
-    return row
-
-# Just for testing, will be put onto flask api later
-def main(symbols):
-    all_data = []
-    for symbol in symbols:
-        row = get_index_data(symbol)
-        all_data.append(row)
-
-    output_dir = 'backend/json'
-    os.makedirs(output_dir, exist_ok=True)
     
-    output_path = os.path.join(output_dir, 'index_data.json')
-    with open(output_path, 'w') as json_file:
-        json.dump(all_data, json_file, indent=4)
+    index_data = {
+        'ticker': symbol,
+        'full_name': name,
+        'current_price': cur_price,
+        'total_assets': total_assets,
+        'top_sectors': top_sectors,
+        'top_ten_holdings': top_stocks,
+        'last_30_days_prices': past_prices
+    }
+    return index_data
+
+def add_index_to_db(index_data):
+    index = ETF.query.filter_by(ticker=index_data['ticker']).first()
+    if index is None:
+        index = ETF(**index_data)
+    else:
+        index.full_name = index_data['full_name']
+        index.current_price = index_data['current_price']
+        index.total_assets = index_data['total_assets']
+        index.top_sectors = index_data['top_sectors']
+        index.top_ten_holdings = index_data['top_ten_holdings']
+        index.last_30_days_prices = index_data['last_30_days_prices']
+    
+    db.session.add(index)
+    db.session.commit()
+
+def main(symbols):
+    with app.app_context():
+        for symbol in symbols:
+            index_data = get_index_data(symbol)
+            add_index_to_db(index_data)
 
 if __name__ == "__main__":
     symbols = ['SPY', 'VTI', 'QQQM']
