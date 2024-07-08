@@ -2,3 +2,4 @@
 backend/csv/
 /backend/json
 __pycache__/
+node_modules/
