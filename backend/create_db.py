@@ -1,8 +1,9 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/findb'
 db = SQLAlchemy(app)
 
 # Association tables for many-to-many relationships
@@ -32,6 +33,9 @@ class Stock(db.Model):
    sector = db.relationship('Sector', back_populates='stocks')
    etfs = db.relationship('ETF', secondary=etf_stock_association, back_populates='top_ten_holdings')
 
+   def toDict(self):
+      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+
 class Sector(db.Model):
    __tablename__ = 'sector'
    key = db.Column(db.String(50), nullable=False, unique=True, primary_key=True)
@@ -44,7 +48,9 @@ class Sector(db.Model):
    # Relationships
    stocks = db.relationship('Stock', back_populates='sector')
    etfs = db.relationship('ETF', secondary=etf_sector_association, back_populates='top_sectors')
-
+   
+   def toDict(self):
+      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 class ETF(db.Model):
    __tablename__ = 'etf'
    
@@ -58,5 +64,7 @@ class ETF(db.Model):
    top_ten_holdings = db.relationship('Stock', secondary=etf_stock_association, back_populates='etfs')
    top_sectors = db.relationship('Sector', secondary=etf_sector_association, back_populates='etfs')
 
+   def toDict(self):
+      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 with app.app_context():
     db.create_all()

@@ -1,0 +1,14 @@
+ul {
+    list-style-type: none;
+}
+
+.accordion {
+    --bs-accordion-active-color: black;
+    --bs-accordion-active-bg: #ced4da;
+    --bs-accordion-border-color: black
+}
+
+img {
+    height: 200px;
+    width: 50%;
+}
