@@ -13,23 +13,16 @@ function NavigationBar() {
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse id="navbarScroll">
                         <Nav
-                            className="me-auto my-2 my-lg-0"
+                            className="m-auto my-2 my-lg-0"
                             style={{ maxHeight: '100px' }}
                             navbarScroll
                         >
-                            <Nav.Link as={Link} to="/">Home</Nav.Link>
-                            <Nav.Link as={Link} to="/About">About</Nav.Link>
-                            <NavDropdown title="Models" id="navbarScrollingDropdown">
-                                <NavDropdown.Item href="#action3">Stocks</NavDropdown.Item>
-                                <NavDropdown.Divider />
-                                <NavDropdown.Item href="#action4">
-                                    Sector
-                                </NavDropdown.Item>
-                                <NavDropdown.Divider />
-                                <NavDropdown.Item href="#action5">
-                                    Index
-                                </NavDropdown.Item>
-                            </NavDropdown>
+                            <Nav.Link className='px-5' as={Link} to="/">Home</Nav.Link>
+                            <Nav.Link className='px-5' as={Link} to="/about">About</Nav.Link>
+                            <Nav.Link className='px-5' as={Link} to="/stocks">Stocks</Nav.Link>
+                            <Nav.Link className='px-5' as={Link} to="/sectors">Sectors</Nav.Link>
+                            <Nav.Link className='px-5' as={Link} to="/indexes">Indexes</Nav.Link>
+
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

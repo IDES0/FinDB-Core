@@ -9,11 +9,9 @@ function Home() {
         <div className="Home">
             <header className="Home-header">
             </header>
-            <Container>
-                <Row>
-                    <ModelCarousel>
-                    </ModelCarousel>
-                </Row>
+            <Container className="pt-5">
+                <ModelCarousel>
+                </ModelCarousel>
             </Container>
         </div>
     );
