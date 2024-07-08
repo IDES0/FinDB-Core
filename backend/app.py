@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from create_db import app, db, Stock, Index, Sector
+from findb.backend.create_db import app, db, Stock, Index, Sector
 
 # app = Flask(__name__)
 
