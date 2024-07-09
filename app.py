@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from create_db import app, db, Stock, Index, Sector
+from backend.create_db import app, db, Stock, Index, Sector
 
 # app = Flask(__name__)
 
@@ -9,7 +9,8 @@ error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
 @app.route('/dbtest')
 def test_db():
    Stock()
-
+   Sector()
+   Index()
    return {"message": "test"}, 200
 
 @app.route("/")
@@ -39,13 +40,13 @@ def index_m():
 @app.get("/api/<name>")
 def get_resource(name):
     if name == "sector":
-      return f"Get {name} received"
+      return db.session.query(Sector).all(), 200
     elif name == "index":
-      return f"Get {name} received" 
+      return db.session.query(Index).all(), 200
     elif name == "stock":
-      return f"Get {name} received" 
+      return db.session.query(Stock).all(), 200
     else:
-      return error_msg
+      return jsonify({"message": error_msg}), 400
 
 
 # POST

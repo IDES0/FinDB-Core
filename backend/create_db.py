@@ -35,7 +35,14 @@ class Stock(db.Model):
 
    def toDict(self):
       return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
-
+"""
+   "key": ""
+   "name": ""
+   "market_cap":  ""
+   "largest_companies": ""
+   "industries": ""
+   "etf_opportunities": ""
+"""
 class Sector(db.Model):
    __tablename__ = 'sector'
    key = db.Column(db.String(50), nullable=False, unique=True, primary_key=True)
@@ -48,9 +55,17 @@ class Sector(db.Model):
    # Relationships
    stocks = db.relationship('Stock', back_populates='sector')
    etfs = db.relationship('ETF', secondary=etf_sector_association, back_populates='top_sectors')
-   
+
    def toDict(self):
       return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+
+"""
+   'ticker': ""
+   'full_name': ""
+   'current_price': ""
+   'total_assets': ""
+   'last_30_days_prices': ""
+"""
 class ETF(db.Model):
    __tablename__ = 'etf'
    
