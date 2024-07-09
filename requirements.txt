@@ -6,5 +6,4 @@ requests
 bs4
 gunicorn
 flask-SQLAlchemy
-npm
 psycopg2-binary
