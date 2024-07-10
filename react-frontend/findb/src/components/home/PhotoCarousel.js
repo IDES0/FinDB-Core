@@ -9,35 +9,19 @@ import './PhotoCarousel.css';
 
 function PhotoCarousel() {
     return (
-        // <div>
-        // <Carousel>
-        //     <Carousel.Item>
-        //     <Image className="img-fluid" src={newspaperPhoto}  />
-        //     </Carousel.Item>
-        //     <Carousel.Item>
-        //     <Image className="img-fluid" src={stockboardPhoto}  />
-        //     </Carousel.Item>
-        //     <Carousel.Item>
-        //     <Image className="img-fluid" src={stockgraphPhoto}  />
-        //     </Carousel.Item>
-        // </Carousel>
-        // </div>
-
-
-
     <div>
         <Carousel controls = {false}>
-            <Carousel.Item>
+            <Carousel.Item interval={3000}>
                 <div>
                     <Image className="img-fluid" src={newspaperPhoto}  />
                 </div>
             </Carousel.Item>
-            <Carousel.Item>
+            <Carousel.Item interval={3000}>
                 <div>
                     <Image className="img-fluid" src={stockboardPhoto}  />
                 </div>
             </Carousel.Item>
-            <Carousel.Item>
+            <Carousel.Item interval={3000}>
                 <div>
                     <Image className="img-fluid" src={stockgraphPhoto}  />
                 </div>

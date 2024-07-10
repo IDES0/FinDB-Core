@@ -5,7 +5,7 @@ import GetStats from './GetStats';
 
 function AboutListGroup() {
   return (
-    <Container className='pt-5'>
+    <Container>
       <ListGroup>
         <ListGroup.Item><strong>Group Name: Cache Thrashers</strong></ListGroup.Item>
         <ListGroup.Item>
