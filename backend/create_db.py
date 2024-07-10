@@ -11,14 +11,14 @@ db = SQLAlchemy(app)
 
 # Index
 index_to_stock = db.Table('index_to_stock', # For full Stock List from Index (Only a few should be populated)
-   db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
-   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker')),
-   db.Column('percentage', db.Float)  # Weight
+    db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
+    db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker')),
+    db.Column('percentage', db.Float)  # Weight
 )
 index_to_top_stocks = db.Table('index_to_top_stocks', # Top Stocks Scraped from Index Scraped (All Indexes Need this)
-   db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
-   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
-   db.Column('percentage', db.Float)  # Weight of the stock in the index
+    db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
+    db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
+    db.Column('percentage', db.Float)  # Weight of the stock in the index
 )
 index_to_sector = db.Table('index_to_sector',
     db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker')),
@@ -33,28 +33,28 @@ stock_to_top_index = db.Table('stock_to_top_index',
 
 # Sector
 sector_to_top_stocks = db.Table('sector_to_top_stocks', # Top Stocks Scraped from Index Scraped (All Indexes Need this)
-   db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
-   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
-   db.Column('percentage', db.Float)  # Weight of the stock in the index
+    db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
+    db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
+    db.Column('percentage', db.Float)  # Weight of the stock in the index
 )
 sector_to_top_index = db.Table('sector_to_top_index', # Top Stocks Scraped from Index Scraped (All Indexes Need this)
-   db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
-   db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
-   db.Column('percentage', db.Float)  # Weight of the index in the index
+    db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
+    db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
+    db.Column('percentage', db.Float)  # Weight of the index in the index
 )
 
 # Industry
 industry_to_top_stocks = db.Table('industry_to_top_stocks', # Top Stocks Scraped from Index Scraped (All Indexes Need this)
-   db.Column('industry_key', db.String(50), db.ForeignKey('industry.industry_key'), primary_key=True),
-   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
-   db.Column('percentage', db.Float)  # Weight of the stock in the index
+    db.Column('industry_key', db.String(50), db.ForeignKey('industry.industry_key'), primary_key=True),
+    db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
+    db.Column('percentage', db.Float)  # Weight of the stock in the index
 )
 
 # Sector <--> Industry
 correlation_sector_industry = db.Table('correlation_sector_industry', 
-   db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
-   db.Column('industry', db.String(50), db.ForeignKey('industry.industry_key'), primary_key=True),
-   db.Column('percentage', db.Float)  # Percentage of the stock in the index
+    db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
+    db.Column('industry', db.String(50), db.ForeignKey('industry.industry_key'), primary_key=True),
+    db.Column('percentage', db.Float)  # Percentage of the stock in the index
 )
 
 # MODELS : 
@@ -73,6 +73,8 @@ class Index(db.Model):
     sectors = db.relationship('Sector', secondary=index_to_sector, back_populates='indexes')
     top_stocks = db.relationship('Stock', secondary=index_to_top_stocks, back_populates='top_indexes')
     stocks = db.relationship('Stock', secondary=index_to_stock, back_populates='indexes')  # Can be NULL
+    def toDict(self):
+        return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
 class Stock(db.Model):
     __tablename__ = 'stock'
@@ -93,7 +95,7 @@ class Stock(db.Model):
     industries = db.relationship('Industry', secondary=industry_to_top_stocks, back_populates='top_stocks')
     
     def toDict(self):
-      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+        return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
 
 class Sector(db.Model):
@@ -106,7 +108,7 @@ class Sector(db.Model):
     indexes = db.relationship('Index', secondary=index_to_sector, back_populates='sectors')
     
     def toDict(self):
-      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+        return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
 
 class Industry(db.Model):
@@ -118,7 +120,7 @@ class Industry(db.Model):
     sectors = db.relationship('Sector', secondary=correlation_sector_industry, back_populates='industries')
 
     def toDict(self):
-      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+        return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
 def drop_all_tables():
     db.drop_all()

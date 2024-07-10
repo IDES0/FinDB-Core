@@ -141,12 +141,19 @@ def add_sector_to_db(sector_name, sector_data):
 
     db.session.commit()
 
-
-def main():
+def sector_data_run():
     with app.app_context():
         for sector, url in SECTOR_URL.items():
-            sector_data = scrape_sector_data(url)
-            add_sector_to_db(sector, sector_data)
+                sector_data = scrape_sector_data(url)
+                add_sector_to_db(sector, sector_data)
+        return sector_data
+
+
+# def main():
+#     with app.app_context():
+#         for sector, url in SECTOR_URL.items():
+#             sector_data = scrape_sector_data(url)
+#             add_sector_to_db(sector, sector_data)
 
 if __name__ == "__main__":
-    main()
+    sector_data_run()

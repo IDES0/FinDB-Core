@@ -8,32 +8,32 @@ error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
 
 @app.route('/dbtest')
 def test_db():
-   Stock()
+  Stock()
 
-   return {"message": "test"}, 200
+  return {"message": "test"}, 200
 
 @app.route("/")
 @app.route("/index.html")
 @app.route("/index.html#")
 def index():
-    return render_template('index.html')
-    # return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
+  return render_template('index.html')
+  # return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
 
 @app.route("/about.html")
 def about():
-   return render_template('about.html')
+  return render_template('about.html')
 
 @app.route("/stock-model.html")
 def stock():
-   return render_template('stock-model.html')
+  return render_template('stock-model.html')
 
 @app.route("/sector-model.html")
 def sector():
-   return render_template('sector-model.html')
+  return render_template('sector-model.html')
 
 @app.route("/index-model.html")
 def index_m():
-   return render_template('index-model.html')
+  return render_template('index-model.html')
 
 # GET ALL
 @app.get("/api/<name>/")

@@ -9,7 +9,8 @@ def get_name(ticker):
     return ticker.info.get('longName')
 
 def get_price(ticker):
-    return round(ticker.info.get('navPrice'), 2)
+    nav_price = ticker.info.get('navPrice')
+    return round(nav_price, 2) if nav_price is not None else 0.0
 
 def get_total_assets(ticker):
     return ticker.info.get('totalAssets')
@@ -100,12 +101,14 @@ def add_index_to_db(index_data):
     db.session.commit()
 
 
-def main(symbols):
+def index_data_run(symbol):
     with app.app_context():
-        for symbol in symbols:
-            index_data = get_index_data(symbol)
-            add_index_to_db(index_data)
+        index_data = get_index_data(symbol)
+        add_index_to_db(index_data)
+        return index_data
 
 if __name__ == "__main__":
     symbols = ['SPY', 'VTI', 'QQQM', 'SOXX']
-    main(symbols)
+    with app.app_context():
+        for symbol in symbols:
+            index_data = get_index_data(symbol)

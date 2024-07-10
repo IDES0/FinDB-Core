@@ -74,9 +74,10 @@ def add_stock_to_db(stock_data):
 
 
 def stock_data_run(symbol):
-    stock_data = get_stock_data(symbol)
-    add_stock_to_db(stock_data)
-    return stock_data
+    with app.app_context():
+        stock_data = get_stock_data(symbol)
+        add_stock_to_db(stock_data)
+        return stock_data
 
 if __name__ == "__main__":
     symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
