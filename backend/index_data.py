@@ -1,10 +1,8 @@
 import yfinance as yf
 from datetime import date, timedelta
 import pandas as pd
-import os
-import json
 import yahooquery as yq
-from create_db import app, db, ETF, Sector, Stock
+from create_db import app, db, Index, Sector, Stock, index_to_top_stocks
 
 # Helper functions
 def get_name(ticker):
@@ -14,7 +12,7 @@ def get_price(ticker):
     return round(ticker.info.get('navPrice'), 2)
 
 def get_total_assets(ticker):
-    return format_number(ticker.info.get('totalAssets'))
+    return ticker.info.get('totalAssets')
 
 def get_historical(ticker, days):
     start_date = date.today() - timedelta(days)
@@ -45,20 +43,6 @@ def get_top_sectors(ticker):
         sectors_list.append({'sector': sector, 'weight': weight})
     return sectors_list
 
-def format_number(num):
-    if num is None:
-        return 'N/A'
-    if num >= 1e12:
-        return f'{num / 1e12:.2f}T'
-    elif num >= 1e9:
-        return f'{num / 1e9:.2f}B'
-    elif num >= 1e6:
-        return f'{num / 1e6:.2f}M'
-    elif num >= 1e3:
-        return f'{num / 1e3:.2f}K'
-    else:
-        return str(num)
-
 def get_index_data(symbol):
     yq_ticker = yq.Ticker(symbol)
     yf_ticker = yf.Ticker(symbol)
@@ -71,29 +55,50 @@ def get_index_data(symbol):
     
     index_data = {
         'ticker': symbol,
-        'full_name': name,
-        'current_price': cur_price,
-        'total_assets': total_assets,
-        'top_sectors': top_sectors,
+        'name': name,
+        'nav': cur_price,
+        'total_asset': total_assets,
+        'last_30_days_prices': past_prices,
         'top_ten_holdings': top_stocks,
-        'last_30_days_prices': past_prices
+        'top_sectors': top_sectors
     }
     return index_data
 
 def add_index_to_db(index_data):
-    index = ETF.query.filter_by(ticker=index_data['ticker']).first()
+    index = Index.query.filter_by(ticker=index_data['ticker']).first()
     if index is None:
-        index = ETF(**index_data)
-    else:
-        index.full_name = index_data['full_name']
-        index.current_price = index_data['current_price']
-        index.total_assets = index_data['total_assets']
-        index.top_sectors = index_data['top_sectors']
-        index.top_ten_holdings = index_data['top_ten_holdings']
-        index.last_30_days_prices = index_data['last_30_days_prices']
-    
-    db.session.add(index)
+        index = Index(
+            ticker=index_data['ticker'],
+            name=index_data['name'],
+            nav=index_data['nav'],
+            total_asset=index_data['total_asset'],
+            last_30_days_prices=index_data['last_30_days_prices']
+        )
+        db.session.add(index)
+        db.session.commit()
+
+    for stock_data in index_data['top_ten_holdings']:
+        stock = Stock.query.filter_by(ticker=stock_data['symbol']).first()
+        if stock is None:
+            stock = Stock(
+                ticker=stock_data['symbol'],
+                name=stock_data['holdingName']
+            )
+            db.session.add(stock)
+            db.session.commit()
+        exists = db.session.query(index_to_top_stocks).filter_by(index_ticker=index.ticker, stock_ticker=stock.ticker).first()
+        if not exists:
+            percentage = float(stock_data['holdingPercent']) #weird float thingy idk why its needed here
+            db.session.execute(index_to_top_stocks.insert().values(index_ticker=index.ticker, stock_ticker=stock.ticker, percentage=percentage))
+
+    for sector_data in index_data['top_sectors']:
+        sector = Sector.query.filter_by(sector_key=sector_data['sector']).first()
+        if sector:
+            if sector not in index.sectors:
+                index.sectors.append(sector)
+
     db.session.commit()
+
 
 def main(symbols):
     with app.app_context():
@@ -102,5 +107,5 @@ def main(symbols):
             add_index_to_db(index_data)
 
 if __name__ == "__main__":
-    symbols = ['SPY', 'VTI', 'QQQM']
+    symbols = ['SPY', 'VTI', 'QQQM', 'SOXX']
     main(symbols)

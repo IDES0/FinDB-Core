@@ -3,22 +3,40 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import json
 import os
-from create_db import app, db, Sector
+from create_db import app, db, Sector, Industry, Stock
+from io import StringIO
 
 BASE_SECTOR_URL = "https://finance.yahoo.com/sectors/"
 SECTOR_URL = {
-    "Technology": BASE_SECTOR_URL + "technology",
-    "Financial Services": BASE_SECTOR_URL + "financial-services",
-    "Healthcare": BASE_SECTOR_URL + "healthcare",
-    "Consumer Cyclical": BASE_SECTOR_URL + "consumer-cyclical",
-    "Communication Services": BASE_SECTOR_URL + "communication-services",
-    "Industrials": BASE_SECTOR_URL + "industrials",
-    "Consumer Defensive": BASE_SECTOR_URL + "consumer-defensive",
-    "Energy": BASE_SECTOR_URL + "energy",
-    "Basic Materials": BASE_SECTOR_URL + "basic-materials",
-    "Real Estate": BASE_SECTOR_URL + "real-estate",
-    "Utilities": BASE_SECTOR_URL + "utilities"
+    "technology": BASE_SECTOR_URL + "technology",
+    "financial-services": BASE_SECTOR_URL + "financial-services",
+    "healthcare": BASE_SECTOR_URL + "healthcare",
+    "consumer-cyclical": BASE_SECTOR_URL + "consumer-cyclical",
+    "communication-services": BASE_SECTOR_URL + "communication-services",
+    "industrials": BASE_SECTOR_URL + "industrials",
+    "consumer-defensive": BASE_SECTOR_URL + "consumer-defensive",
+    "energy": BASE_SECTOR_URL + "energy",
+    "basic-materials": BASE_SECTOR_URL + "basic-materials",
+    "real-estate": BASE_SECTOR_URL + "real-estate",
+    "utilities": BASE_SECTOR_URL + "utilities"
 }
+
+
+def format_number(num):
+    if num is None:
+        return None
+    if isinstance(num, float): #wack number is already formated
+        return num
+    if num.endswith('T'):
+        return float(num[:-1]) * 1e12
+    elif num.endswith('B'):
+        return float(num[:-1]) * 1e9
+    elif num.endswith('M'):
+        return float(num[:-1]) * 1e6
+    elif num.endswith('K'):
+        return float(num[:-1]) * 1e3
+    else:
+        return float(num)
 
 def scrape_industry(soup):
     industries = []
@@ -41,7 +59,7 @@ def scrape_etf_opportunities(soup):
     if etf_section:
         table = etf_section.find('table')
         if table:
-            df = pd.read_html(str(table))[0]
+            df = pd.read_html(StringIO(str(table)))[0]
             etf_opportunities = df.to_dict(orient='records')
     return etf_opportunities
 
@@ -51,7 +69,7 @@ def scrape_sector_data(sector_url):
     
     market_cap_div = soup.find('div', class_="value svelte-e2k9sg")
     if market_cap_div:
-        market_cap = market_cap_div.get_text()
+        market_cap = format_number(market_cap_div.get_text())
     else:
         market_cap = None
     
@@ -61,7 +79,7 @@ def scrape_sector_data(sector_url):
     if table_section:
         table = table_section.find('table')
         if table:
-            df = pd.read_html(str(table))[0]
+            df = pd.read_html(StringIO(str(table)))[0]
             if "1Y Target Est." in df.columns and "Avg. Analyst Rating" in df.columns:
                 df = df.drop(columns=["1Y Target Est.", "Avg. Analyst Rating"])
             table_data = df.to_dict(orient='records')
@@ -85,24 +103,44 @@ def scrape_sector_data(sector_url):
     return data
 
 def add_sector_to_db(sector_name, sector_data):
-    sector = Sector.query.filter_by(key=sector_name).first()
+    sector = Sector.query.filter_by(sector_key=sector_name).first()
+    market_cap = format_number(sector_data["market_cap"]) if isinstance(sector_data["market_cap"], str) else sector_data["market_cap"]
+
     if sector is None:
         sector = Sector(
-            key=sector_name,
+            sector_key=sector_name,
             name=sector_name,
-            market_cap=sector_data["market_cap"],
-            largest_companies=sector_data["largest_companies"],
-            industries=sector_data["industries"],
-            etf_opportunities=sector_data["etf_opportunities"]
+            market_cap=market_cap
         )
+        db.session.add(sector)
     else:
-        sector.market_cap = sector_data["market_cap"]
-        sector.largest_companies = sector_data["largest_companies"]
-        sector.industries = sector_data["industries"]
-        sector.etf_opportunities = sector_data["etf_opportunities"]
-    
-    db.session.add(sector)
+        sector.market_cap = market_cap
+
+    for industry_data in sector_data["industries"]:
+        industry = Industry.query.filter_by(industry_key=industry_data['key']).first()
+        if industry is None:
+            industry = Industry(industry_key=industry_data['key'], name=industry_data['name'])
+            db.session.add(industry)
+        if industry not in sector.industries:
+            sector.industries.append(industry)
+
+    for stock_data in sector_data["largest_companies"]:
+        stock = Stock.query.filter_by(ticker=stock_data['Ticker']).first()
+        if stock is None:
+            stock = Stock(
+                ticker=stock_data['Ticker'],
+                name=stock_data['Name'],
+                current_price=stock_data['Last Price'],
+                market_cap=format_number(stock_data['Market Cap']) if isinstance(stock_data['Market Cap'], str) else stock_data['Market Cap'],
+                sector_key=sector.sector_key,
+                last_30_days_prices=[]
+            )
+            db.session.add(stock)
+        if stock not in sector.top_stocks:
+            sector.top_stocks.append(stock)
+
     db.session.commit()
+
 
 def main():
     with app.app_context():

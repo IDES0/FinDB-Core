@@ -1,85 +1,120 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import inspect
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/findb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Post4743!@localhost:5432/postgres'
 db = SQLAlchemy(app)
 
-# Association tables for many-to-many relationships
-etf_stock_association = db.Table('etf_stock_association',
-   db.Column('etf_ticker', db.String(50), db.ForeignKey('etf.ticker')),
-   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'))
+# HELPER : Association tables 
+
+# Index
+index_to_stock = db.Table('index_to_stock', # For full Stock List from Index (Only a few should be populated)
+   db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
+   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker')),
+   db.Column('percentage', db.Float)  # Weight
 )
-etf_sector_association = db.Table('etf_sector_association',
-   db.Column('etf_ticker', db.String(50), db.ForeignKey('etf.ticker')),
-   db.Column('sector_key', db.String(50), db.ForeignKey('sector.key'))
+index_to_top_stocks = db.Table('index_to_top_stocks', # Top Stocks Scraped from Index Scraped (All Indexes Need this)
+   db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
+   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
+   db.Column('percentage', db.Float)  # Weight of the stock in the index
+)
+index_to_sector = db.Table('index_to_sector',
+    db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker')),
+    db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'))
 )
 
+# Stock
+stock_to_top_index = db.Table('stock_to_top_index',
+    db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker')),
+    db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'))
+)
 
+# Sector
+sector_to_top_stocks = db.Table('sector_to_top_stocks', # Top Stocks Scraped from Index Scraped (All Indexes Need this)
+   db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
+   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
+   db.Column('percentage', db.Float)  # Weight of the stock in the index
+)
+sector_to_top_index = db.Table('sector_to_top_index', # Top Stocks Scraped from Index Scraped (All Indexes Need this)
+   db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
+   db.Column('index_ticker', db.String(50), db.ForeignKey('index.ticker'), primary_key=True),
+   db.Column('percentage', db.Float)  # Weight of the index in the index
+)
+
+# Industry
+industry_to_top_stocks = db.Table('industry_to_top_stocks', # Top Stocks Scraped from Index Scraped (All Indexes Need this)
+   db.Column('industry_key', db.String(50), db.ForeignKey('industry.industry_key'), primary_key=True),
+   db.Column('stock_ticker', db.String(50), db.ForeignKey('stock.ticker'), primary_key=True),
+   db.Column('percentage', db.Float)  # Weight of the stock in the index
+)
+
+# Sector <--> Industry
+correlation_sector_industry = db.Table('correlation_sector_industry', 
+   db.Column('sector_key', db.String(50), db.ForeignKey('sector.sector_key'), primary_key=True),
+   db.Column('industry', db.String(50), db.ForeignKey('industry.industry_key'), primary_key=True),
+   db.Column('percentage', db.Float)  # Percentage of the stock in the index
+)
+
+# MODELS : 
+
+class Index(db.Model):
+    __tablename__ = 'index'
+    ticker = db.Column(db.String(50), primary_key=True)  # PK
+    name = db.Column(db.String(255), unique=True)  # Unique name
+
+    # General Data
+    nav = db.Column(db.Float)
+    total_asset = db.Column(db.Float)
+    last_30_days_prices = db.Column(db.JSON)
+
+    # Relationships
+    sectors = db.relationship('Sector', secondary=index_to_sector, back_populates='indexes')
+    top_stocks = db.relationship('Stock', secondary=index_to_top_stocks, back_populates='top_indexes')
+    stocks = db.relationship('Stock', secondary=index_to_stock, back_populates='indexes')  # Can be NULL
 
 class Stock(db.Model):
-   __tablename__ = 'stock'
-   ticker = db.Column(db.String(50), nullable=False, unique=True, primary_key=True)
-   full_name = db.Column(db.String(50))
-   current_price = db.Column(db.Float)
-   market_cap = db.Column(db.String(50))
-   industry = db.Column(db.String(50))
-   sector_key = db.Column(db.String(50), db.ForeignKey('sector.key'))
-   top_10_indexes = db.Column(db.JSON)
-   last_30_days_prices = db.Column(db.JSON)
+    __tablename__ = 'stock'
+    ticker = db.Column(db.String(50), primary_key=True)
 
-   # Relationships
-   sector = db.relationship('Sector', back_populates='stocks')
-   etfs = db.relationship('ETF', secondary=etf_stock_association, back_populates='top_ten_holdings')
+    # General Data
+    name = db.Column(db.String(255))
+    current_price = db.Column(db.Float)
+    market_cap = db.Column(db.Float)
+    industry_key = db.Column(db.String(50), db.ForeignKey('industry.industry_key'))  # FK to Industry
+    sector_key = db.Column(db.String(50), db.ForeignKey('sector.sector_key')) 
+    last_30_days_prices = db.Column(db.JSON)
 
-   def toDict(self):
-      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
-"""
-   "key": ""
-   "name": ""
-   "market_cap":  ""
-   "largest_companies": ""
-   "industries": ""
-   "etf_opportunities": ""
-"""
+    # Relationships
+    top_indexes = db.relationship('Index', secondary=stock_to_top_index, back_populates='top_stocks')
+    indexes = db.relationship('Index', secondary=index_to_stock, back_populates='stocks') 
+    sectors = db.relationship('Sector', secondary=sector_to_top_stocks, back_populates='top_stocks')
+    industries = db.relationship('Industry', secondary=industry_to_top_stocks, back_populates='top_stocks')
+
 class Sector(db.Model):
-   __tablename__ = 'sector'
-   key = db.Column(db.String(50), nullable=False, unique=True, primary_key=True)
-   name = db.Column(db.String(50), nullable=False)
-   market_cap = db.Column(db.String(50))
-   largest_companies = db.Column(db.JSON)
-   industries = db.Column(db.JSON)
-   etf_opportunities = db.Column(db.JSON)
+    __tablename__ = 'sector'
+    sector_key = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(255), nullable=False, unique=True)
+    market_cap = db.Column(db.Float)
+    industries = db.relationship('Industry', secondary=correlation_sector_industry, back_populates='sectors')
+    top_stocks = db.relationship('Stock', secondary=sector_to_top_stocks, back_populates='sectors')
+    indexes = db.relationship('Index', secondary=index_to_sector, back_populates='sectors')
 
-   # Relationships
-   stocks = db.relationship('Stock', back_populates='sector')
-   etfs = db.relationship('ETF', secondary=etf_sector_association, back_populates='top_sectors')
 
-   def toDict(self):
-      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+class Industry(db.Model):
+    __tablename__ = 'industry'
+    industry_key = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(255))
+    market_cap = db.Column(db.Float)
+    top_stocks = db.relationship('Stock', secondary=industry_to_top_stocks, back_populates='industries')
+    sectors = db.relationship('Sector', secondary=correlation_sector_industry, back_populates='industries')
 
-"""
-   'ticker': ""
-   'full_name': ""
-   'current_price': ""
-   'total_assets': ""
-   'last_30_days_prices': ""
-"""
-class ETF(db.Model):
-   __tablename__ = 'etf'
-   
-   ticker = db.Column(db.String(50), primary_key=True)
-   full_name = db.Column(db.String(50))
-   current_price = db.Column(db.Float)
-   total_assets = db.Column(db.String(50))
-   last_30_days_prices = db.Column(db.JSON)
+def drop_all_tables():
+    db.drop_all()
 
-   # Relationships
-   top_ten_holdings = db.relationship('Stock', secondary=etf_stock_association, back_populates='etfs')
-   top_sectors = db.relationship('Sector', secondary=etf_sector_association, back_populates='etfs')
-
-   def toDict(self):
-      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
-with app.app_context():
+def create_all_tables():
     db.create_all()
+
+if __name__ == "__main__":
+    with app.app_context():
+        drop_all_tables()
+        create_all_tables()
