@@ -6,19 +6,19 @@ import os
 from create_db import app, db, Sector, Industry, Stock
 from io import StringIO
 
-BASE_SECTOR_URL = "https://finance.yahoo.com/sectors/"
-SECTOR_URL = {
-    "technology": BASE_SECTOR_URL + "technology",
-    "financial-services": BASE_SECTOR_URL + "financial-services",
-    "healthcare": BASE_SECTOR_URL + "healthcare",
-    "consumer-cyclical": BASE_SECTOR_URL + "consumer-cyclical",
-    "communication-services": BASE_SECTOR_URL + "communication-services",
-    "industrials": BASE_SECTOR_URL + "industrials",
-    "consumer-defensive": BASE_SECTOR_URL + "consumer-defensive",
-    "energy": BASE_SECTOR_URL + "energy",
-    "basic-materials": BASE_SECTOR_URL + "basic-materials",
-    "real-estate": BASE_SECTOR_URL + "real-estate",
-    "utilities": BASE_SECTOR_URL + "utilities"
+BASE_URL = "https://finance.yahoo.com/sectors/"
+NAME_KEY_PAIR = {
+    "Technology": "technology",
+    "Financial Services":"financial-services",
+    "Healthcare": "healthcare",
+    "Consumer Cyclical": "consumer-cyclical",
+    "Communication Services": "communication-services",
+    "Industrials": "industrials",
+    "Consumer Defensive": "consumer-defensive",
+    "Energy": "energy",
+    "Basic Materials": "basic-materials",
+    "Real Estate": "real-estate",
+    "Utilities": "utilities"
 }
 
 
@@ -102,20 +102,19 @@ def scrape_sector_data(sector_url):
     
     return data
 
-def add_sector_to_db(sector_name, sector_data):
-    sector = Sector.query.filter_by(sector_key=sector_name).first()
+def add_sector_to_db(sector_key, sector_name, sector_data):
+    sector = Sector.query.filter_by(sector_key=sector_key).first()
     market_cap = format_number(sector_data["market_cap"]) if isinstance(sector_data["market_cap"], str) else sector_data["market_cap"]
 
     if sector is None:
         sector = Sector(
-            sector_key=sector_name,
+            sector_key=sector_key,
             name=sector_name,
             market_cap=market_cap
         )
         db.session.add(sector)
     else:
         sector.market_cap = market_cap
-
     for industry_data in sector_data["industries"]:
         industry = Industry.query.filter_by(industry_key=industry_data['key']).first()
         if industry is None:
@@ -143,17 +142,10 @@ def add_sector_to_db(sector_name, sector_data):
 
 def sector_data_run():
     with app.app_context():
-        for sector, url in SECTOR_URL.items():
-                sector_data = scrape_sector_data(url)
-                add_sector_to_db(sector, sector_data)
+        for name, key in NAME_KEY_PAIR.items():
+                sector_data = scrape_sector_data(BASE_URL+key)
+                add_sector_to_db(key, name, sector_data)
         return sector_data
-
-
-# def main():
-#     with app.app_context():
-#         for sector, url in SECTOR_URL.items():
-#             sector_data = scrape_sector_data(url)
-#             add_sector_to_db(sector, sector_data)
 
 if __name__ == "__main__":
     sector_data_run()

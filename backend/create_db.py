@@ -2,8 +2,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 # needed for toDict() for jsonify
 from sqlalchemy import inspect
+from flask_cors import CORS
 
 app = Flask(__name__)
+# enable CORS for connection to frontend
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/findb'
 db = SQLAlchemy(app)
 
