@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from create_db import app, db, Stock, ETF, Sector
+from create_db import app, db, Stock, Index, Sector
 
 # app = Flask(__name__)
 
@@ -51,11 +51,11 @@ def get_resource(name, id=None):
     
     elif name == "index":
       if id is None:
-        indexes = ETF.query.all()
+        indexes = Index.query.all()
         response = []
         for index in indexes: response.append(index.toDict())
         return jsonify(response), 200
-      response = db.session.query(ETF).get(id)
+      response = db.session.query(Index).get(id)
       return jsonify(response.toDict()), 200
       
       
@@ -93,7 +93,7 @@ def post_resource(name):
       response = Sector.query.get(form['key'])
       return jsonify(response.toDict()), 200
     elif name == "index":
-      new_index = ETF(
+      new_index = Index(
                                 ticker               = form['ticker'],
                                 full_name            = form['full_name'],
                                 current_price        = form['current_price'],
@@ -102,7 +102,7 @@ def post_resource(name):
                                 )
       db.session.add(new_index)
       db.session.commit()
-      response = ETF.query.get(form['ticker'])
+      response = Index.query.get(form['ticker'])
       return jsonify(response.toDict()), 200
     elif name == "stock":
       new_stock = Stock(
@@ -141,7 +141,7 @@ def put_resource(name,id):
       response = Sector.query.get(id)
       return jsonify(response.toDict()), 200
     elif name == "index":
-      up_index = ETF.query.get(id)
+      up_index = Index.query.get(id)
       # update with new JSON 
       up_index.ticker               = form['ticker'],
       up_index.full_name            = form['full_name'],
@@ -149,7 +149,7 @@ def put_resource(name,id):
       up_index.total_assets         = form['total_assets'],
       up_index.last_30_days_prices  = form['last_30_days_prices']
       db.session.commit()
-      response = ETF.query.get(id)
+      response = Index.query.get(id)
       return jsonify(response.toDict()), 200
     elif name == "stock":
       up_stock = Stock.query.get(id)
@@ -180,7 +180,7 @@ def delete_resource(name,id):
     db.session.commit()
     return jsonify({"message": f"Sector {id} deleted."}), 200
   elif name == "index":
-    ETF.query.filter_by(ticker=id).delete()
+    Index.query.filter_by(ticker=id).delete()
     db.session.commit() 
     return jsonify({"message": f"Index {id} deleted."}), 200
 

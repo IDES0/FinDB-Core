@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+# needed for toDict() for jsonify
+from sqlalchemy import inspect
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Post4743!@localhost:5432/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/findb'
 db = SQLAlchemy(app)
 
 # HELPER : Association tables 
@@ -64,7 +66,7 @@ class Index(db.Model):
 
     # General Data
     nav = db.Column(db.Float)
-    total_asset = db.Column(db.Float)
+    total_asset = db.Column(db.BigInteger)
     last_30_days_prices = db.Column(db.JSON)
 
     # Relationships
@@ -79,7 +81,7 @@ class Stock(db.Model):
     # General Data
     name = db.Column(db.String(255))
     current_price = db.Column(db.Float)
-    market_cap = db.Column(db.Float)
+    market_cap = db.Column(db.BigInteger)
     industry_key = db.Column(db.String(50), db.ForeignKey('industry.industry_key'))  # FK to Industry
     sector_key = db.Column(db.String(50), db.ForeignKey('sector.sector_key')) 
     last_30_days_prices = db.Column(db.JSON)
@@ -89,24 +91,34 @@ class Stock(db.Model):
     indexes = db.relationship('Index', secondary=index_to_stock, back_populates='stocks') 
     sectors = db.relationship('Sector', secondary=sector_to_top_stocks, back_populates='top_stocks')
     industries = db.relationship('Industry', secondary=industry_to_top_stocks, back_populates='top_stocks')
+    
+    def toDict(self):
+      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+
 
 class Sector(db.Model):
     __tablename__ = 'sector'
     sector_key = db.Column(db.String(50), primary_key=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
-    market_cap = db.Column(db.Float)
+    market_cap = db.Column(db.BigInteger)
     industries = db.relationship('Industry', secondary=correlation_sector_industry, back_populates='sectors')
     top_stocks = db.relationship('Stock', secondary=sector_to_top_stocks, back_populates='sectors')
     indexes = db.relationship('Index', secondary=index_to_sector, back_populates='sectors')
+    
+    def toDict(self):
+      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
 
 class Industry(db.Model):
     __tablename__ = 'industry'
     industry_key = db.Column(db.String(50), primary_key=True)
     name = db.Column(db.String(255))
-    market_cap = db.Column(db.Float)
+    market_cap = db.Column(db.BigInteger)
     top_stocks = db.relationship('Stock', secondary=industry_to_top_stocks, back_populates='industries')
     sectors = db.relationship('Sector', secondary=correlation_sector_industry, back_populates='industries')
+
+    def toDict(self):
+      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
 def drop_all_tables():
     db.drop_all()

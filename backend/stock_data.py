@@ -30,7 +30,7 @@ def get_stock_data(symbol):
         'name': ticker.info.get('longName'),
         'current_price': ticker.info.get('currentPrice'),
         'market_cap': ticker.info.get('marketCap'),
-        'industry': ticker.info.get('industryKey'),
+        'industry_key': ticker.info.get('industryKey'),
         'sector_key': ticker.info.get('sectorKey'),
         'last_30_days_prices': past_prices,
         'top_10_indexes': get_top_ten_index(yq_ticker)
@@ -45,9 +45,9 @@ def add_stock_to_db(stock_data):
         db.session.add(sector)
         db.session.commit()
     
-    industry = Industry.query.filter_by(industry_key=stock_data['industry']).first()
+    industry = Industry.query.filter_by(industry_key=stock_data['industry_key']).first()
     if industry is None:
-        industry = Industry(industry_key=stock_data['industry'], name=stock_data['industry'])
+        industry = Industry(industry_key=stock_data['industry_key'], name=stock_data['industry_key'])
         db.session.add(industry)
         db.session.commit()
 
@@ -73,12 +73,15 @@ def add_stock_to_db(stock_data):
     db.session.commit()
 
 
-def main(symbols):
+def stock_data_run(symbol):
+    stock_data = get_stock_data(symbol)
+    add_stock_to_db(stock_data)
+    return stock_data
+
+if __name__ == "__main__":
+    symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
     with app.app_context():
         for symbol in symbols:
             stock_data = get_stock_data(symbol)
             add_stock_to_db(stock_data)
-
-if __name__ == "__main__":
-    symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
-    main(symbols)
+    
