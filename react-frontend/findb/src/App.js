@@ -5,6 +5,9 @@ import { Routes } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import About from './components/about/About.js';
 import Model from './components/model/Model.js';
+import StockPage from './components/model/stock/StockPage.js'
+import SectorPage from './components/model/sector/SectorPage.js';
+import IndexPage from './components/model/index/IndexPage.js'
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
         <Route path="/stocks" element={<Model name={"Stock"}/>} />
         <Route path="/sectors" element={<Model name={"Sector"} />} />
         <Route path="/indexes" element={<Model name={"Index"} />} />
+        <Route path="/stocks/:stockTicker" element={<StockPage />} />
+        <Route path="/sectors/:sectorKey" element={<SectorPage />} />
+        <Route path="/indexes/:indexTicker" element={<IndexPage  />} />
       </Routes>
     </div>
   );

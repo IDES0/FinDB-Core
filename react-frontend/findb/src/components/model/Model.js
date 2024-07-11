@@ -1,8 +1,7 @@
-import ModelTable from "./ModelTable";
 import Container from 'react-bootstrap/Container';
-import StockModelTable from "./StockModelTable";
-import IndexModelTable from "./IndexModelTable";
-import SectorModelTable from "./SectorModelTable";
+import StockModelTable from "./stock/StockModelTable";
+import SectorModelTable from "./sector/SectorModelTable";
+import IndexModelTable from "./index/IndexModelTable";
 
 function Model(props) {
     if (props.name === "Stock") {

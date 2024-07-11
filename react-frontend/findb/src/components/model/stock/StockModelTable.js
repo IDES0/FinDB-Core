@@ -1,5 +1,6 @@
 import Table from 'react-bootstrap/Table';
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom';
 
 function StockModelTable() {
     const [data, setData] = useState([]);
@@ -17,7 +18,11 @@ function StockModelTable() {
             let th_eles = []
             let arr = Object.keys(data[i]).reverse()
             for(let j = 0; j < arr.length; j++) {
-                th_eles.push(<td>{data[i][arr[j]]}</td>)
+                if(arr[j] === "ticker"){
+                    th_eles.push(<td><Link  to={`/stocks/${data[i][arr[j]]}`}>{data[i][arr[j]]}</Link></td>)
+                } else {
+                    th_eles.push(<td>{data[i][arr[j]]}</td>)
+                }
             }
             modelEntries.push(<tr>
                 <td>{i}</td>

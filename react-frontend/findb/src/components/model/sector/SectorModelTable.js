@@ -1,5 +1,6 @@
 import Table from 'react-bootstrap/Table';
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom';
 
 function SectorModelTable() {
     const [data, setData] = useState([]);
@@ -12,12 +13,21 @@ function SectorModelTable() {
         );
     }, []);
     if(data.length != 0) {
-        modelHeaders = Object.keys(data[0]).reverse().map((h) => <th>{h}</th>)
+        let header_arr = Object.keys(data[0]).reverse()
+        header_arr.splice(0, 1)
+        modelHeaders = header_arr.map((h) => <th>{h}</th>)
         for(let i = 0; i < data.length; i++) {
             let th_eles = []
             let arr = Object.keys(data[i]).reverse()
             for(let j = 0; j < arr.length; j++) {
-                th_eles.push(<td>{data[i][arr[j]]}</td>)
+                if (arr[j] == "sector_key") {
+                    continue
+                }
+                if(arr[j] === "name"){
+                    th_eles.push(<td><Link  to={`/sectors/${data[i]["sector_key"]}`}>{data[i][arr[j]]}</Link></td>)
+                } else {
+                    th_eles.push(<td>{data[i][arr[j]]}</td>)
+                }
             }
             modelEntries.push(<tr>
                 <td>{i}</td>
