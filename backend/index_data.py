@@ -118,7 +118,7 @@ def index_data_run(symbol):
         return index_data
 
 if __name__ == "__main__":
-    symbols = ['SPY', 'VTI', 'QQQM', 'SOXX']
+    symbols = ['SPY', 'VTI', 'QQQM', 'SOXX', 'VFFSX', 'IVV']
     #symbols = ['SPY']
     with app.app_context():
         for symbol in symbols:

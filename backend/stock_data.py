@@ -2,7 +2,8 @@
 import yfinance as yf
 import yahooquery as yq
 from datetime import date, timedelta
-from create_db import app, db, Stock, Sector, Index, Industry
+from create_db import app, db, Stock, Sector, Index, Industry, stock_to_top_index
+from fuzzywuzzy import process
 
 def get_historical(ticker, days):
     start_date = date.today() - timedelta(days=days)
@@ -71,6 +72,20 @@ def add_stock_to_db(stock_data):
         stock.sector_key = sector.sector_key
         stock.last_30_days_prices = stock_data['last_30_days_prices']
     db.session.add(stock)
+
+    all_indexes = {index.name: index for index in Index.query.all()}
+    for index_name in stock_data['top_10_indexes']:
+        index = all_indexes.get(index_name)
+        if not index:
+            closest_match, score = process.extractOne(index_name, all_indexes.keys())
+            if score > 70:
+                index = all_indexes[closest_match]
+
+        if index:
+            exists = db.session.query(stock_to_top_index).filter_by(stock_ticker=stock.ticker, index_ticker=index.ticker).first()
+            if not exists:
+                db.session.execute(stock_to_top_index.insert().values(stock_ticker=stock.ticker, index_ticker=index.ticker))
+    
     db.session.commit()
 
 

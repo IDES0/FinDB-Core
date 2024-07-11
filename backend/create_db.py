@@ -77,13 +77,12 @@ class Index(db.Model):
 
     # Relationships
     sectors = db.relationship('Sector', secondary=index_to_sector, backref='indexes_from_sector')
-    top_stocks = db.relationship('Stock', secondary=index_to_top_stocks, backref='top_indexes')
+    top_stocks = db.relationship('Stock', secondary=index_to_top_stocks, backref='top_indexes_from_stock')
     stocks = db.relationship('Stock', secondary=index_to_stock, backref='indexes')  # Can be NULL
-    
+
     def toDict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
-    
 class Stock(db.Model):
     __tablename__ = 'stock'
     ticker = db.Column(db.String(50), primary_key=True)
@@ -97,15 +96,11 @@ class Stock(db.Model):
     last_30_days_prices = db.Column(db.JSON)
 
     # Relationships
-    # top_indexes = db.relationship('Index', secondary=stock_to_top_index, back_populates='top_stocks')
-    # indexes = db.relationship('Index', secondary=index_to_stock, back_populates='stocks') 
-    # sectors = db.relationship('Sector', secondary=sector_to_top_stocks, back_populates='top_stocks')
+    top_indexes = db.relationship('Index', secondary=stock_to_top_index, backref='stocks_top_indexes')
     industries = db.relationship('Industry', secondary=industry_to_top_stocks, back_populates='top_stocks')
     
     def toDict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
-
-
 class Sector(db.Model):
     __tablename__ = 'sector'
     sector_key = db.Column(db.String(50), primary_key=True)
@@ -117,7 +112,6 @@ class Sector(db.Model):
     
     def toDict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
-
 
 class Industry(db.Model):
     __tablename__ = 'industry'

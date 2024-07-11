@@ -8,3 +8,5 @@ gunicorn
 flask-SQLAlchemy
 psycopg2-binary #TODO change to 'psycopg2' for prod
 flask-cors
+fuzzywuzzy
+Levenshtein
