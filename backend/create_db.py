@@ -9,7 +9,8 @@ from sqlalchemy import inspect
 app = Flask(__name__)
 # enable CORS for connection to frontend
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/sacred-veld-427516-s5:us-central1:findb'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
 db = SQLAlchemy(app)
 
 # HELPER : Association tables 
