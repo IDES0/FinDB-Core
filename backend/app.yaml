@@ -9,7 +9,7 @@ runtime_config:
   operating_system: ubuntu22
 
 beta_settings:
-  cloud_sql_instances: sacred-veld-427516-s5:us-central1:findb=tcp:5432
+  cloud_sql_instances: sacred-veld-427516-s5:us-central1:findb
 
 # This sample incurs costs to run on the App Engine flexible environment. 
 # The settings below are to reduce costs during testing and are not appropriate

@@ -95,10 +95,15 @@ def stock_data_run(symbol):
         add_stock_to_db(stock_data)
         return stock_data
 
-if __name__ == "__main__":
-    symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
-    with app.app_context():
-        for symbol in symbols:
-            stock_data = get_stock_data(symbol)
-            add_stock_to_db(stock_data)
-    
+# if __name__ == "__main__":
+#     symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
+#     with app.app_context():
+#         for symbol in symbols:
+#             stock_data = get_stock_data(symbol)
+#             add_stock_to_db(stock_data)
+
+symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
+with app.app_context():
+    for symbol in symbols:
+        stock_data = get_stock_data(symbol)
+        add_stock_to_db(stock_data) 
