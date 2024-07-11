@@ -1,9 +1,10 @@
 #create_db.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
+
 # needed for toDict() for jsonify
 from sqlalchemy import inspect
-from flask_cors import CORS
 
 app = Flask(__name__)
 # enable CORS for connection to frontend

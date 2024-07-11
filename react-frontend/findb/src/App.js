@@ -15,9 +15,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/stocks" element={<Model name={"Stocks Model"}/>} />
-        <Route path="/sectors" element={<Model name={"Sectors Model"} />} />
-        <Route path="/indexes" element={<Model name={"Indexes Model"} />} />
+        <Route path="/stocks" element={<Model name={"Stock"}/>} />
+        <Route path="/sectors" element={<Model name={"Sector"} />} />
+        <Route path="/indexes" element={<Model name={"Index"} />} />
       </Routes>
     </div>
   );
