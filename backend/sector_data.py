@@ -1,10 +1,12 @@
+#sector_data.py
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import json
 import os
-from create_db import app, db, Sector, Industry, Stock
+from create_db import app, db, Sector, Industry, Stock, sector_to_top_stocks
 from io import StringIO
+
 
 BASE_URL = "https://finance.yahoo.com/sectors/"
 NAME_KEY_PAIR = {
@@ -115,6 +117,7 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
         db.session.add(sector)
     else:
         sector.market_cap = market_cap
+
     for industry_data in sector_data["industries"]:
         industry = Industry.query.filter_by(industry_key=industry_data['key']).first()
         if industry is None:
@@ -138,7 +141,13 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
         if stock not in sector.top_stocks:
             sector.top_stocks.append(stock)
 
+        percentage = float(stock_data['Market Weight'].strip('%'))
+        exists = db.session.query(sector_to_top_stocks).filter_by(sector_key=sector.sector_key, stock_ticker=stock.ticker).first()
+        if not exists:
+            db.session.execute(sector_to_top_stocks.insert().values(sector_key=sector.sector_key, stock_ticker=stock.ticker, percentage=percentage))
+
     db.session.commit()
+
 
 def sector_data_run():
     with app.app_context():

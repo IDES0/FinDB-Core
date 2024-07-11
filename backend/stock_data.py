@@ -1,3 +1,4 @@
+#stock_data.py
 import yfinance as yf
 import yahooquery as yq
 from datetime import date, timedelta

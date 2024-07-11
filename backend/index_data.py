@@ -1,8 +1,9 @@
+#index_data.py
 import yfinance as yf
 from datetime import date, timedelta
 import pandas as pd
 import yahooquery as yq
-from create_db import app, db, Index, Sector, Stock, index_to_top_stocks
+from create_db import app, db, Index, Sector, Stock, index_to_top_stocks, index_to_sector
 
 # Helper functions
 def get_name(ticker):
@@ -40,8 +41,17 @@ def get_top_ten_stock(ticker):
 def get_top_sectors(ticker):
     sectors = ticker.fund_sector_weightings
     sectors_list = []
-    for sector, weight in sectors.items():
-        sectors_list.append({'sector': sector, 'weight': weight})
+    if sectors is not None:
+        for index, row in sectors.iterrows():
+            sector_weights = row.to_dict()
+            for sector, weight in sector_weights.items():
+                # SKIP SECTOR OR ELSE IT DOESNT WORK
+                
+                if (index.strip() == "realestate"):
+                    sectors_list.append({'sector': "real-estate", 'weight': weight * 100})
+                else:
+                    sectors_list.append({'sector': index.strip().lower().replace('_', '-'), 'weight': weight * 100})
+    print(sectors_list)
     return sectors_list
 
 def get_index_data(symbol):
@@ -89,18 +99,19 @@ def add_index_to_db(index_data):
             db.session.commit()
         exists = db.session.query(index_to_top_stocks).filter_by(index_ticker=index.ticker, stock_ticker=stock.ticker).first()
         if not exists:
-            percentage = float(stock_data['holdingPercent']) #weird float thingy idk why its needed here
+            percentage = float(stock_data['holdingPercent'])
             db.session.execute(index_to_top_stocks.insert().values(index_ticker=index.ticker, stock_ticker=stock.ticker, percentage=percentage))
 
     for sector_data in index_data['top_sectors']:
-        sector = Sector.query.filter_by(sector_key=sector_data['sector']).first()
+        sector_key = sector_data['sector']
+        sector = Sector.query.filter_by(sector_key=sector_key).first()
         if sector:
-            if sector not in index.sectors:
-                index.sectors.append(sector)
+            exists = db.session.query(index_to_sector).filter_by(index_ticker=index.ticker, sector_key=sector.sector_key).first()
+            if not exists:
+                db.session.execute(index_to_sector.insert().values(index_ticker=index.ticker, sector_key=sector.sector_key, percentage=sector_data['weight']))
 
     db.session.commit()
-
-
+    
 def index_data_run(symbol):
     with app.app_context():
         index_data = get_index_data(symbol)
@@ -109,6 +120,8 @@ def index_data_run(symbol):
 
 if __name__ == "__main__":
     symbols = ['SPY', 'VTI', 'QQQM', 'SOXX']
+    #symbols = ['SPY']
     with app.app_context():
         for symbol in symbols:
             index_data = get_index_data(symbol)
+            add_index_to_db(index_data)
