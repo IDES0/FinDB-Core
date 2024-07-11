@@ -51,7 +51,6 @@ def get_top_sectors(ticker):
                     sectors_list.append({'sector': "real-estate", 'weight': weight * 100})
                 else:
                     sectors_list.append({'sector': index.strip().lower().replace('_', '-'), 'weight': weight * 100})
-    print(sectors_list)
     return sectors_list
 
 def get_index_data(symbol):
