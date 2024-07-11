@@ -42,13 +42,13 @@ def get_stock_data(symbol):
 def add_stock_to_db(stock_data):
     sector_key = stock_data['sector_key']
     sector = Sector.query.filter_by(sector_key=sector_key).first()
-    if sector is None:
+    if sector is None and sector_key:
         sector = Sector(sector_key=sector_key, name=sector_key)
         db.session.add(sector)
         db.session.commit()
     
     industry = Industry.query.filter_by(industry_key=stock_data['industry_key']).first()
-    if industry is None:
+    if industry is None and stock_data['industry_key']:
         industry = Industry(industry_key=stock_data['industry_key'], name=stock_data['industry_key'])
         db.session.add(industry)
         db.session.commit()
@@ -60,16 +60,16 @@ def add_stock_to_db(stock_data):
             name=stock_data['name'],
             current_price=stock_data['current_price'],
             market_cap=stock_data['market_cap'],
-            industry_key=industry.industry_key,
-            sector_key=sector.sector_key,
+            industry_key=industry.industry_key if industry else None,
+            sector_key=sector.sector_key if sector else None,
             last_30_days_prices=stock_data['last_30_days_prices']
         )
     else:
         stock.name = stock_data['name']
         stock.current_price = stock_data['current_price']
         stock.market_cap = stock_data['market_cap']
-        stock.industry_key = industry.industry_key
-        stock.sector_key = sector.sector_key
+        stock.industry_key = industry.industry_key if industry else None
+        stock.sector_key = sector.sector_key if sector else None
         stock.last_30_days_prices = stock_data['last_30_days_prices']
     db.session.add(stock)
 
@@ -77,9 +77,11 @@ def add_stock_to_db(stock_data):
     for index_name in stock_data['top_10_indexes']:
         index = all_indexes.get(index_name)
         if not index:
-            closest_match, score = process.extractOne(index_name, all_indexes.keys())
-            if score > 70:
-                index = all_indexes[closest_match]
+            match = process.extractOne(index_name, all_indexes.keys())
+            if match:
+                closest_match, score = match
+                if score > 70:
+                    index = all_indexes[closest_match]
 
         if index:
             exists = db.session.query(stock_to_top_index).filter_by(stock_ticker=stock.ticker, index_ticker=index.ticker).first()
