@@ -8,7 +8,11 @@ from sqlalchemy import inspect
 app = Flask(__name__)
 # enable CORS for connection to frontend
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/findb'
+# cloud db string:
+# postgresql+pg8000://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
+# gcp:
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+pg8000://postgres:@172.17.0.1:5432/postgres' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@172.17.0.1:5432/postgres'
 db = SQLAlchemy(app)
 
 # HELPER : Association tables 

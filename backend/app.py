@@ -48,7 +48,7 @@ def get_resource(name, id=None):
       #get by id
       response = db.session.query(Sector).get(id)
       return jsonify(response.toDict()), 200
-    
+       
     elif name == "index":
       if id is None:
         indexes = Index.query.all()
@@ -60,8 +60,7 @@ def get_resource(name, id=None):
         return jsonify(response), 200
       response = db.session.query(Index).get(id)
       return jsonify(response.toDict()), 200
-      
-      
+        
     elif name == "stock":
       if id is None:
         stocks = Stock.query.all()
