@@ -53,7 +53,10 @@ def get_resource(name, id=None):
       if id is None:
         indexes = Index.query.all()
         response = []
-        for index in indexes: response.append(index.toDict())
+        for index in indexes: 
+          r = index.toDict()
+          del r['last_30_days_prices']
+          response.append(r)
         return jsonify(response), 200
       response = db.session.query(Index).get(id)
       return jsonify(response.toDict()), 200
@@ -63,7 +66,10 @@ def get_resource(name, id=None):
       if id is None:
         stocks = Stock.query.all()
         response = []
-        for stock in stocks: response.append(stock.toDict())
+        for stock in stocks: 
+          r = stock.toDict()
+          del r['last_30_days_prices']
+          response.append(r)
         return jsonify(response), 200
       response = db.session.query(Stock).get(id).toDict()
       return jsonify(response), 200
