@@ -10,7 +10,10 @@ app = Flask(__name__)
 # enable CORS for connection to frontend
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/sacred-veld-427516-s5:us-central1:findb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
+# cloud string pls do not delete!!!
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/sacred-veld-427516-s5:us-central1:findb'
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:@localhost:5432/findb'
 db = SQLAlchemy(app)
 
 # HELPER : Association tables 
@@ -137,7 +140,15 @@ def drop_all_tables():
 def create_all_tables():
     db.create_all()
 
-if __name__ == "__main__":
-    with app.app_context():
-        drop_all_tables()
-        create_all_tables()
+
+
+# if __name__ == "__main__":
+#     with app.app_context():
+#         drop_all_tables()
+#         create_all_tables()
+"""
+    took outside of if statement so it runs when imported to app.py 
+"""
+with app.app_context():
+    drop_all_tables()
+    create_all_tables()

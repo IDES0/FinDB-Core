@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from create_db import app, db, Stock, Index, Sector
+import sector_data
+import index_data
+import stock_data
 
 # app = Flask(__name__)
 
