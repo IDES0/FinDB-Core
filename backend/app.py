@@ -1,12 +1,14 @@
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from create_db import app, db, Stock, Index, Sector, index_to_sector
-import sector_data
-import index_data
-import stock_data
-
+from create_db import app, db, Stock, Index, Sector, index_to_sector, start_db
+from sector_data import sector_data_run
+from index_data import start_index
+from stock_data import stock_data_run, populate_stock_data
 # app = Flask(__name__)
-
+start_db()
+sector_data_run()
+start_index()
+populate_stock_data()
 error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
 
 @app.route('/dbtest')

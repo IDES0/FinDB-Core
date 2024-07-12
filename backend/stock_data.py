@@ -89,8 +89,7 @@ def add_stock_to_db(stock_data):
                 db.session.execute(stock_to_top_index.insert().values(stock_ticker=stock.ticker, index_ticker=index.ticker))
     
     db.session.commit()
-
-
+        
 def stock_data_run(symbol):
     with app.app_context():
         stock_data = get_stock_data(symbol)
@@ -104,8 +103,16 @@ def stock_data_run(symbol):
 #             stock_data = get_stock_data(symbol)
 #             add_stock_to_db(stock_data)
 
-symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
-with app.app_context():
-    for symbol in symbols:
-        stock_data = get_stock_data(symbol)
-        add_stock_to_db(stock_data) 
+# symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
+# with app.app_context():
+#     for symbol in symbols:
+#         stock_data = get_stock_data(symbol)
+#         add_stock_to_db(stock_data) 
+def populate_stock_data():
+    with app.app_context():
+        tickers = [stock.ticker for stock in Stock.query.all()]
+        for ticker in tickers:
+            stock_data_run(ticker)        
+
+if __name__ == "__main__":
+    populate_stock_data()

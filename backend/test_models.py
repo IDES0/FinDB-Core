@@ -7,15 +7,15 @@ from sector_data import add_sector_to_db, scrape_sector_data, sector_data_run
 
 
 class TestModels(TestCase):
-    data_dict = {}
-    """
-      STOCK MODEL 
-    """
-    # symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
+   data_dict = {}
+   """
+   STOCK MODEL 
+   """
+   # symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
 
-    def test_stock_1(self):
-      # populate example DB
-    #   symbols = ['NVDA']
+   def test_stock_1(self):
+   # populate example DB
+   #   symbols = ['NVDA']
       symbols = ['AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'JPM']
 
       with app.app_context():
@@ -34,7 +34,7 @@ class TestModels(TestCase):
          else:
             self.fail("NVDA not found in the database")
 
-    def test_stock_2(self):
+   def test_stock_2(self):
       with app.app_context():
          # Fetch NVDA
          stock_meta = Stock.query.filter_by(ticker='META').first()
@@ -45,7 +45,7 @@ class TestModels(TestCase):
          else:
             self.fail("META not found in the database")
 
-    def test_stock_3(self):
+   def test_stock_3(self):
       with app.app_context():
          # Fetch NVDA
          stock_brk_b = Stock.query.filter_by(ticker='BRK-B').first()
@@ -56,12 +56,12 @@ class TestModels(TestCase):
          else:
             self.fail("BRK-B not found in the database")
 
-    """
-      INDEX MODEL
    """
-    def test_index_1(self):
-        symbol = '^RUT'
-        with app.app_context():
+   INDEX MODEL
+   """
+   def test_index_1(self):
+      symbol = '^RUT'
+      with app.app_context():
             index_data_run(symbol)
             index_data = Index.query.filter_by(ticker=symbol).first().toDict()
             print(index_data)
@@ -71,24 +71,24 @@ class TestModels(TestCase):
             index_w5000 = Index.query.filter_by(ticker='^RUT').first()
             
             if index_w5000:
-                fetched_data = index_w5000.toDict()
-                self.assertDictEqual(self.data_dict['^RUT'], fetched_data)
+               fetched_data = index_w5000.toDict()
+               self.assertDictEqual(self.data_dict['^RUT'], fetched_data)
             else:
-                self.fail("SPY not found in the database")
+               self.fail("SPY not found in the database")
 
 
    
-    def test_index_2(self):
+   def test_index_2(self):
       pass
    
-    def test_index_3(self):
+   def test_index_3(self):
       pass
       
 """
       SECTOR MODEL
 """
 #    def test_sector_1(self):
-        
+      
 #         symbols=['technology']
 #         with app.app_context():
 #          db.create_all()

@@ -156,7 +156,6 @@ def sector_data_run():
                 add_sector_to_db(key, name, sector_data)
         return sector_data
 
-# if __name__ == "__main__":
-#     sector_data_run()
+if __name__ == "__main__":
+    sector_data_run()
 
-sector_data_run()

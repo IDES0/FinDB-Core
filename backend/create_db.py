@@ -135,13 +135,14 @@ def create_all_tables():
 
 
 
-# if __name__ == "__main__":
-#     with app.app_context():
-#         drop_all_tables()
-#         create_all_tables()
+if __name__ == "__main__":
+    with app.app_context():
+        drop_all_tables()
+        create_all_tables()
 """
     took outside of if statement so it runs when imported to app.py 
 """
-with app.app_context():
-    drop_all_tables()
-    create_all_tables()
+def start_db():
+    with app.app_context():
+        drop_all_tables()
+        create_all_tables()

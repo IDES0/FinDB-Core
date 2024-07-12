@@ -117,10 +117,18 @@ def index_data_run(symbol):
         add_index_to_db(index_data)
         return index_data
 
-
-symbols = ['SPY', 'VTI', 'QQQM', 'SOXX', 'VFFSX', 'IVV']
-#symbols = ['SPY']
-with app.app_context():
-    for symbol in symbols:
-        index_data = get_index_data(symbol)
-        add_index_to_db(index_data)
+def start_index():
+    symbols = ['SPY', 'VTI', 'QQQM', 'SOXX', 'VFFSX', 'IVV']
+    #symbols = ['SPY']
+    with app.app_context():
+        for symbol in symbols:
+            index_data = get_index_data(symbol)
+            add_index_to_db(index_data)
+            
+if __name__ == "__main__":
+    symbols = ['SPY', 'VTI', 'QQQM', 'SOXX', 'VFFSX', 'IVV']
+    #symbols = ['SPY']
+    with app.app_context():
+        for symbol in symbols:
+            index_data = get_index_data(symbol)
+            add_index_to_db(index_data)
