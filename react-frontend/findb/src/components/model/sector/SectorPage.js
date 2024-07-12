@@ -9,12 +9,15 @@ function SectorPage() {
 
     const { sectorKey } = useParams();
 
+    // Flask API call to get specific instance data from Sector model
     useEffect(() => {
         fetch(`http://localhost:5000/api/sector/${sectorKey}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
     }, []);
+
+    //Display information for instance
     if (data != undefined) {
         let list_items = []
         for (let a in data) {
