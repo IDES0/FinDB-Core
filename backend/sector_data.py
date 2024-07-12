@@ -45,9 +45,12 @@ def scrape_industry(soup):
     industry_section = soup.find('div', class_="container svelte-152j1g3", attrs={"data-testid": "sector-picker"})
     if industry_section:
         industry_rows = industry_section.find_all('div', class_="itm svelte-5qjwyh")
+
         for row in industry_rows:
+
             industry_name = row.get('data-value', '')
             industry_key = row.get('data-key', '')
+
             if industry_key:
                 industries.append({
                     "name": industry_name,

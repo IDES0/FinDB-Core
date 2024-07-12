@@ -4,6 +4,7 @@ from create_db import app, db, Stock, Index, Sector, index_to_sector
 import sector_data
 import index_data
 import stock_data
+from sqlalchemy import desc
 
 # app = Flask(__name__)
 
@@ -46,12 +47,49 @@ def get_resource(name, id=None):
       if id is None:
         sectors = Sector.query.all()
         response = []
-        for sector in sectors: response.append(sector.toDict())
+        for sector in sectors:
+            sector_dict = sector.toDict()
+
+            # Fetch top stock for this sector
+            top_stock = Stock.query.filter_by(sector_key=sector.sector_key)\
+                                   .order_by(desc(Stock.market_cap))\
+                                   .first()
+            if top_stock:
+                sector_dict['top_stock'] = top_stock.toDict()['ticker']
+
+            # Fetch top index associated with this sector
+            top_index = Index.query.join(index_to_sector, Index.ticker == index_to_sector.c.index_ticker)\
+                                    .filter(index_to_sector.c.sector_key == sector.sector_key)\
+                                    .order_by(desc(index_to_sector.c.percentage))\
+                                    .first()
+            if top_index:
+                sector_dict['top_index'] = top_index.toDict()['ticker']
+
+            # Top 10 stocks in market sector dominance
+            top_10_stocks = Stock.query.filter_by(sector_key=sector.sector_key)\
+                                       .order_by(desc(Stock.market_cap))\
+                                       .limit(10)
+            combined_market_cap = sum(stock.market_cap for stock in top_10_stocks)
+
+            # Retrieve the total market cap of the entire sector
+            total_market_cap = sector.market_cap
+
+            # Calculate the ratio of combined market cap of the top 10 stocks to the total market cap of the sector
+            if total_market_cap > 0:
+                market_cap_ratio = combined_market_cap / total_market_cap
+            else:
+                market_cap_ratio = 0  # Handling division by zero if there's no market cap data available
+
+            sector_dict['market_cap_ratio'] = market_cap_ratio
+
+
+            response.append(sector_dict)
         return jsonify(response), 200
+      
+      
 
       sector = Sector.query.get(id)
       if sector:
-        from sqlalchemy import desc
         # Fetch top stocks in this sector sorted by market cap
         sector_dict = sector.toDict()
 
