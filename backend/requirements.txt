@@ -6,12 +6,7 @@ requests
 bs4
 gunicorn
 flask-SQLAlchemy
-<<<<<<< HEAD
-psycopg2-binary
-coverage
-=======
 psycopg2-binary #TODO change to 'psycopg2' for prod
 flask-cors
 fuzzywuzzy
 Levenshtein
->>>>>>> dev

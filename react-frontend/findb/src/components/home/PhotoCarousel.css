@@ -1,0 +1,17 @@
+/* h1 {
+    color:rgb(222, 226, 229);
+    font-size: 60px;
+} */
+
+.carousel-indicators {
+    display: none;
+} 
+/*{
+    filter: invert(70%);
+} */
+
+
+img {
+    height: 200px;
+    width: 50%;
+}

@@ -1,3 +1,6 @@
-.carousel-indicators {
-    filter: invert(70%);
+
+p {
+    text-align: center;
+    color: #fff; /* Sets the text color to white */
+    font-size: 20px
 }

@@ -1,10 +1,11 @@
 import ListGroup from 'react-bootstrap/ListGroup';
 import AboutAccordian from './AboutAccordian';
 import Container from 'react-bootstrap/Container';
+import GetStats from './GetStats';
 
 function AboutListGroup() {
   return (
-    <Container className='pt-5'>
+    <Container>
       <ListGroup>
         <ListGroup.Item><strong>Group Name: Cache Thrashers</strong></ListGroup.Item>
         <ListGroup.Item>
@@ -26,6 +27,7 @@ function AboutListGroup() {
             <li><strong>Data Sources Link:</strong> <a href="https://finance.yahoo.com/"> Yahoo! Finance</a></li>
             <li><strong>Published Postman Collection:</strong> TBD Phase II</li>
             <li><strong>Description:</strong> Data is gathered using the yfinance Python library which calls the Yahoo! Finance REST API. Historical data is scraped as the API does not provide it.</li>
+            <GetStats forTeam={true} user={""} ></GetStats>
           </ul>
         </ListGroup.Item>
         <ListGroup.Item>
