@@ -27,7 +27,7 @@ before_script:
 
 test:
    script:
-    - python -m coverage run -m ./tests/backend.py
+    - python -m coverage run -m ./backend/test_models.py
      - coverage html
    artifacts:
         paths:
