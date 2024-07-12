@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
+
 from create_db import app, db, Stock, Index, Sector, index_to_sector, start_db
 from sector_data import sector_data_run
 from index_data import start_index
 from stock_data import stock_data_run, populate_stock_data
-from create_db import app, db, Stock, Index, Sector, index_to_sector
+from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks
 from sqlalchemy import desc
 
 # app = Flask(__name__)
@@ -47,6 +48,10 @@ def index_m():
 @app.get("/api/<name>/")
 @app.get("/api/<name>/<id>")
 def get_resource(name, id=None):
+    
+
+
+
     if name == "sector":
       if id is None:
         sectors = Sector.query.all()
@@ -85,13 +90,8 @@ def get_resource(name, id=None):
                 market_cap_ratio = 0  # Handling division by zero if there's no market cap data available
 
             sector_dict['market_cap_ratio'] = market_cap_ratio
-
-
             response.append(sector_dict)
         return jsonify(response), 200
-      
-      
-
       sector = Sector.query.get(id)
       if sector:
         # Fetch top stocks in this sector sorted by market cap
@@ -114,15 +114,66 @@ def get_resource(name, id=None):
       
     elif name == "index":
       if id is None:
-        indexes = Index.query.all()
-        response = []
-        for index in indexes: 
-          r = index.toDict()
-          del r['last_30_days_prices']
-          response.append(r)
-        return jsonify(response), 200
-      response = db.session.query(Index).get(id)
-      return jsonify(response.toDict()), 200
+          indexes = Index.query.all()
+          response = []
+          for index in indexes: 
+              r = index.toDict()
+              del r['last_30_days_prices']
+
+              response.append(r)
+          return jsonify(response), 200
+      else:
+          # Query the index_to_sector table to get associated sectors for the given index id
+          index = Index.query.get(id)
+          if index:
+              index_dict = index.toDict()
+              del index_dict['last_30_days_prices']  # Remove unwanted field
+              
+              # Fetch sectors associated with the index
+              sector_data = db.session.query(index_to_sector).filter_by(index_ticker=id).all()
+              sectors = []
+              top_sector = None
+              max_percentage = 0
+              for data in sector_data:
+                  sector_dict = {
+                      'sector_key': data.sector_key,
+                      'percentage': data.percentage
+                  }
+                  sectors.append(sector_dict)
+                  if data.percentage > max_percentage:
+                      max_percentage = data.percentage
+                      top_sector = sector_dict
+              
+              # Add sectors to the response
+              index_dict['sectors'] = sectors
+              
+              # Add top sector to the response
+              index_dict['top_sector'] = top_sector
+              
+              # Fetch top stocks associated with the index
+              top_stocks_data = db.session.query(index_to_top_stocks).filter_by(index_ticker=id).all()
+              top_stocks = []
+              for data in top_stocks_data:
+                  top_stocks.append({
+                      'stock_ticker': data.stock_ticker,
+                      'percentage': data.percentage
+                  })
+              
+              # Add top stocks to the response
+              index_dict['top_stocks'] = top_stocks
+
+              return jsonify(index_dict), 200
+          else:
+              return jsonify({"message": "Index not found"}), 404
+    
+
+
+
+
+
+
+
+
         
     elif name == "stock":
       if id is None:
