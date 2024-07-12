@@ -25,7 +25,7 @@ function AboutListGroup() {
           <ul>
             <strong>Data: </strong>
             <li><strong>Data Sources Link:</strong> <a href="https://finance.yahoo.com/"> Yahoo! Finance</a></li>
-            <li><strong>Published Postman Collection:</strong> TBD Phase II</li>
+            <li><strong>Published Postman Collection:</strong> <a href="https://documenter.getpostman.com/view/21850040/2sA3duFDMC">Collection</a> </li>
             <li><strong>Description:</strong> Data is gathered using the yfinance Python library which calls the Yahoo! Finance REST API. Historical data is scraped as the API does not provide it.</li>
             <GetStats forTeam={true} user={""} ></GetStats>
           </ul>
@@ -33,7 +33,7 @@ function AboutListGroup() {
         <ListGroup.Item>
           <strong>Tools: </strong>
           <ul>
-            <li><strong>Tools Used:</strong> Flask, yfinance, Pandas, Boostrap, AJAX </li>
+            <li><strong>Tools Used:</strong> Flask, yfinance, Pandas, React, React-Boostrap, PostgreSQL </li>
           </ul>
         </ListGroup.Item>
       </ListGroup>
