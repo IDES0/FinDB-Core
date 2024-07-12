@@ -18,18 +18,18 @@ function SectorModelTable() {
     //Add Sector model data to table element
     if(data.length != 0) {
         let header_arr = Object.keys(data[0]).reverse()
-        header_arr.splice(0, 1)
         modelHeaders = header_arr.map((h) => <th>{h}</th>)
         for(let i = 0; i < data.length; i++) {
             let th_eles = []
             let arr = Object.keys(data[i]).reverse()
             for(let j = 0; j < arr.length; j++) {
-                if (arr[j] == "sector_key") {
-                    continue
-                }
                 if(arr[j] === "name"){
                     // Add link to sector instance
                     th_eles.push(<td><Link  to={`/sectors/${data[i]["sector_key"]}`}>{data[i][arr[j]]}</Link></td>)
+                } else if (arr[j] === "top_stock") {
+                    th_eles.push(<td><Link  to={`/stocks/${data[i]["top_stock"]}`}>{data[i][arr[j]]}</Link></td>)
+                } else if (arr[j] === "top_index") {
+                    th_eles.push(<td><Link  to={`/indexes/${data[i]["top_index"]}`}>{data[i][arr[j]]}</Link></td>)
                 } else {
                     th_eles.push(<td>{data[i][arr[j]]}</td>)
                 }
