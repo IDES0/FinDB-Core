@@ -7,3 +7,4 @@ bs4
 gunicorn
 flask-SQLAlchemy
 psycopg2-binary
+coverage
