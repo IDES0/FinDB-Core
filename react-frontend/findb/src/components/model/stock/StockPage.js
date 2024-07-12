@@ -10,16 +10,20 @@ function StockPage() {
 
     const { stockTicker } = useParams();
 
+    // Flask API call to get specific instance data from Stock model
     useEffect(() => {
         fetch(`http://localhost:5000/api/stock/${stockTicker}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
     }, []);
+
+    //Display information for instance
     if (data != undefined) {
         let list_items = []
         for (let a in data) {
             if (a == "sector_key") {
+                // Link to Sector model instance
                 list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/sectors/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
             } else {
                 if (a !== "ticker" && a !== "last_30_days_prices") {

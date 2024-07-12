@@ -16,6 +16,7 @@ function GetCommits(props) {
     const [numCommits, setNumCommits] = useState(0);
     let urlName = ""
 
+    // Axios call to retrieve gitlab stats
     useEffect(() => {
         if (props.forTeam) {
             urlName = 'https://gitlab.com/api/v4/projects/59294372/repository/commits?per_page=100';

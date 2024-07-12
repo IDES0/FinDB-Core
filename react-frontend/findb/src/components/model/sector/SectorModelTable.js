@@ -6,12 +6,16 @@ function SectorModelTable() {
     const [data, setData] = useState([]);
     let modelEntries = [];
     let modelHeaders = [];
+
+    //Flask API call to get data from Sector model
     useEffect(() => {
         fetch("http://localhost:5000/api/sector/").then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
     }, []);
+
+    //Add Sector model data to table element
     if(data.length != 0) {
         let header_arr = Object.keys(data[0]).reverse()
         header_arr.splice(0, 1)
@@ -24,6 +28,7 @@ function SectorModelTable() {
                     continue
                 }
                 if(arr[j] === "name"){
+                    // Add link to sector instance
                     th_eles.push(<td><Link  to={`/sectors/${data[i]["sector_key"]}`}>{data[i][arr[j]]}</Link></td>)
                 } else {
                     th_eles.push(<td>{data[i][arr[j]]}</td>)
