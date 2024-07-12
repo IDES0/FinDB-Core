@@ -27,8 +27,8 @@ def test_db():
 @app.route("/index.html")
 @app.route("/index.html#")
 def index():
-    return render_template('index.html')
-    # return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
+    # return render_template('index.html')
+    return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
 
 
 @app.route("/about.html")

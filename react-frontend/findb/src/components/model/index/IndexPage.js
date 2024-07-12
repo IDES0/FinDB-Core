@@ -12,7 +12,7 @@ function IndexPage() {
 
     // Flask API call to get specific instance data from Index model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/index/${indexTicker}`).then((res) => res.json().then((json_data) =>
+        fetch(`http://quantum-yen-427619-c5.lm.r.appspot.com/api/index/${indexTicker}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
