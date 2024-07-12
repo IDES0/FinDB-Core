@@ -90,22 +90,6 @@ class Stock(db.Model):
     __tablename__ = 'stock'
     ticker = db.Column(db.String(50), primary_key=True)
 
-<<<<<<< HEAD
-   # Relationships
-   sector = db.relationship('Sector', back_populates='stocks')
-   etfs = db.relationship('ETF', secondary=etf_stock_association, back_populates='top_ten_holdings')
-
-   def toDict(self):
-      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
-"""
-   "key": ""
-   "name": ""
-   "market_cap":  ""
-   "largest_companies": ""
-   "industries": ""
-   "etf_opportunities": ""
-"""
-=======
     # General Data
     name = db.Column(db.String(255))
     current_price = db.Column(db.Float)
@@ -120,7 +104,6 @@ class Stock(db.Model):
     
     def toDict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
->>>>>>> dev
 class Sector(db.Model):
     __tablename__ = 'sector'
     sector_key = db.Column(db.String(50), primary_key=True)
@@ -133,30 +116,6 @@ class Sector(db.Model):
     def toDict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
-<<<<<<< HEAD
-   # Relationships
-   stocks = db.relationship('Stock', back_populates='sector')
-   etfs = db.relationship('ETF', secondary=etf_sector_association, back_populates='top_sectors')
-
-   def toDict(self):
-      return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
-
-"""
-   'ticker': ""
-   'full_name': ""
-   'current_price': ""
-   'total_assets': ""
-   'last_30_days_prices': ""
-"""
-class ETF(db.Model):
-   __tablename__ = 'etf'
-   
-   ticker = db.Column(db.String(50), primary_key=True)
-   full_name = db.Column(db.String(50))
-   current_price = db.Column(db.Float)
-   total_assets = db.Column(db.String(50))
-   last_30_days_prices = db.Column(db.JSON)
-=======
 class Industry(db.Model):
     __tablename__ = 'industry'
     industry_key = db.Column(db.String(50), primary_key=True)
@@ -164,7 +123,6 @@ class Industry(db.Model):
     market_cap = db.Column(db.BigInteger)
     top_stocks = db.relationship('Stock', secondary=industry_to_top_stocks, back_populates='industries')
     sectors = db.relationship('Sector', secondary=correlation_sector_industry, back_populates='industries')
->>>>>>> dev
 
     def toDict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
