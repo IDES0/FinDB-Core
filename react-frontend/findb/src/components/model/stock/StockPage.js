@@ -12,7 +12,7 @@ function StockPage() {
 
     // Flask API call to get specific instance data from Stock model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/stock/${stockTicker}`).then((res) => res.json().then((json_data) =>
+        fetch(`http://quantum-yen-427619-c5.lm.r.appspot.com/api/stock/${stockTicker}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
