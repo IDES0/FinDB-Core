@@ -23,7 +23,6 @@ function StockModelTable() {
             let arr = Object.keys(data[i]).reverse()
             for(let j = 0; j < arr.length; j++) {
                 if(arr[j] === "ticker"){
-
                     // Add link to stock instance
                     th_eles.push(<td><Link  to={`/stocks/${data[i][arr[j]]}`}>{data[i][arr[j]]}</Link></td>)
                 } else {
