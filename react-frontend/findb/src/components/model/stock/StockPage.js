@@ -14,8 +14,11 @@ function StockPage() {
     useEffect(() => {
         fetch(`http://quantum-yen-427619-c5.lm.r.appspot.com/api/stock/${stockTicker}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
-        )
-        );
+        ));
+
+        fetch(`http://quantum-yen-427619-c5.lm.r.appspot.com/api/stock/${stockTicker}`).then((res) => res.json().then((json_data) =>
+            setData(json_data)
+        ));
     }, []);
 
     //Display information for instance
@@ -26,8 +29,9 @@ function StockPage() {
                 // Link to Sector model instance
                 list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/sectors/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
             } else {
-                if (a !== "ticker" && a !== "last_30_days_prices") {
+                if (a !== "ticker") {
                     list_items.push(<ListGroup.Item><strong>{a}: </strong>{data[a]}</ListGroup.Item>)
+
                 }
             }
 
