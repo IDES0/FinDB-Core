@@ -25,8 +25,9 @@ before_script:
   - source venv/bin/activate
   - pip install -r ./requirements.txt
 
-#test:
-#   script:
+test:
+   script:
+    - python --version 
 #    - python -m coverage run -m ./backend/test_models.py
 #     - coverage html
 #   artifacts:
