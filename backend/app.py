@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-from create_db import app, db, Stock, Index, Sector
+from create_db import app, db, Stock, Index, Sector, index_to_sector
 import sector_data
 import index_data
 import stock_data
@@ -48,10 +48,28 @@ def get_resource(name, id=None):
         response = []
         for sector in sectors: response.append(sector.toDict())
         return jsonify(response), 200
-      #get by id
-      response = db.session.query(Sector).get(id)
-      return jsonify(response.toDict()), 200
-       
+
+      sector = Sector.query.get(id)
+      if sector:
+        from sqlalchemy import desc
+        # Fetch top stocks in this sector sorted by market cap
+        sector_dict = sector.toDict()
+
+        top_stocks = Stock.query.filter_by(sector_key=sector.sector_key)\
+                                    .order_by(desc(Stock.market_cap))\
+                                    .limit(10).all()              
+        sector_dict['top_stocks'] = [stock.toDict()['ticker'] for stock in top_stocks]
+        # Join Index with index_to_sector and order by percentage
+        top_indexes = Index.query.join(index_to_sector, Index.ticker == index_to_sector.c.index_ticker)\
+                                      .filter(index_to_sector.c.sector_key.like(sector.sector_key))\
+                                      .order_by(desc(index_to_sector.c.percentage))\
+                                      .limit(10).all()
+        sector_dict['top_indexes'] = [index.toDict()['ticker'] for index in top_indexes]
+
+        return jsonify(sector_dict), 200
+      else:
+        return jsonify({"message": "Sector not found"}), 404
+      
     elif name == "index":
       if id is None:
         indexes = Index.query.all()
