@@ -44,10 +44,10 @@ before_script:
 #             - public/
 
 run:
-  artifacts:
-      script:
+  script:
     # run the command here
     - python ./backend/stock_data.py
+  artifacts:
     paths:
       - build/*
 
