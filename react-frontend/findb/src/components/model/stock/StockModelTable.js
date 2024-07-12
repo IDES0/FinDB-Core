@@ -9,7 +9,7 @@ function StockModelTable() {
 
     //Flask API call to get data from Stock model
     useEffect(() => {
-        fetch("http://localhost:5000/api/stock/").then((res) => res.json().then((json_data) =>
+        fetch("http://quantum-yen-427619-c5.lm.r.appspot.com/api/stock/").then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
@@ -23,7 +23,6 @@ function StockModelTable() {
             let arr = Object.keys(data[i]).reverse()
             for(let j = 0; j < arr.length; j++) {
                 if(arr[j] === "ticker"){
-
                     // Add link to stock instance
                     th_eles.push(<td><Link  to={`/stocks/${data[i][arr[j]]}`}>{data[i][arr[j]]}</Link></td>)
                 } else {

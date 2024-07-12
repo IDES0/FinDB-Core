@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from "react-router-dom";
 import ListGroup from 'react-bootstrap/ListGroup';
 import Container from 'react-bootstrap/Container';
+import { Link } from 'react-router-dom';
 
 function IndexPage() {
     const [data, setData] = useState();
@@ -11,7 +12,7 @@ function IndexPage() {
 
     // Flask API call to get specific instance data from Index model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/index/${indexTicker}`).then((res) => res.json().then((json_data) =>
+        fetch(`http://quantum-yen-427619-c5.lm.r.appspot.com/api/index/${indexTicker}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
@@ -21,13 +22,19 @@ function IndexPage() {
     if (data != undefined) {
         let list_items = []
         for (let a in data) {
-            if (a !== "ticker" && a !== "name" && a !== "last_30_days_prices") {
-                list_items.push(<ListGroup.Item><strong>{a}: </strong>{data[a]}</ListGroup.Item>)
+            if(a === "top_sector") {
+                list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/sectors/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
+            } else if(a === "top_stock") {
+                list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/stocks/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
+            } else {
+                if(a !== "ticker") {
+                    list_items.push(<ListGroup.Item><strong>{a}: </strong>{data[a]}</ListGroup.Item>)
+                }
             }
         }
         output.push(
             <Container>
-                <h1>{data.name}</h1>
+                <h1>{data.ticker}</h1>
                 <ListGroup>
                    {list_items}
                 </ListGroup>
