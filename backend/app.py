@@ -111,19 +111,19 @@ def get_sector(id):
 
         sector_dict = sector.toDict()
         # Fetch top stock for this sector
-        top_stock = Stock.query.filter_by(sector_key=sector.sector_key)\
-                                .order_by(desc(Stock.market_cap))\
-                                .first()
-        if top_stock:
-            sector_dict['top_stock'] = top_stock.toDict()['ticker']
+        # top_stock = Stock.query.filter_by(sector_key=sector.sector_key)\
+        #                         .order_by(desc(Stock.market_cap))\
+        #                         .first()
+        # if top_stock:
+        #     sector_dict['top_stock'] = top_stock.toDict()['ticker']
 
         # Fetch top index associated with this sector
-        top_index = Index.query.join(index_to_sector, Index.ticker == index_to_sector.c.index_ticker)\
-            .filter(index_to_sector.c.sector_key == sector.sector_key)\
-            .order_by(desc(index_to_sector.c.percentage))\
-            .first()
-        if top_index:
-            sector_dict['top_index'] = top_index.toDict()['ticker']
+        # top_index = Index.query.join(index_to_sector, Index.ticker == index_to_sector.c.index_ticker)\
+        #     .filter(index_to_sector.c.sector_key == sector.sector_key)\
+        #     .order_by(desc(index_to_sector.c.percentage))\
+        #     .first()
+        # if top_index:
+        #     sector_dict['top_index'] = top_index.toDict()['ticker']
 
         # Top 10 stocks in market sector dominance
         top_10_stocks = Stock.query.filter_by(sector_key=sector.sector_key)\
@@ -143,7 +143,7 @@ def get_sector(id):
 
         sector_dict['market_cap_ratio'] = market_cap_ratio
 
-        '''
+        
         # Fetch top stocks in this sector sorted by market cap
         sector_dict = sector.toDict()
 
@@ -157,7 +157,6 @@ def get_sector(id):
                                         .order_by(desc(index_to_sector.c.percentage))\
                                         .limit(10).all()
         sector_dict['top_indexes'] = [index.toDict()['ticker'] for index in top_indexes]
-        '''
 
         return jsonify(sector_dict), 200
     else:
@@ -194,24 +193,24 @@ def get_index(id):
         sector_data = db.session.query(
             index_to_sector).filter_by(index_ticker=id).all()
         sectors = []
-        top_sector = None
-        max_percentage = 0
+        #top_sector = None
+        #max_percentage = 0
         for data in sector_data:
-            sector_dict = {
-                'sector_key': data.sector_key,
-                'percentage': data.percentage
-            }
-            sectors.append(sector_dict)
-            if data.percentage > max_percentage:
-                max_percentage = data.percentage
-                top_sector = sector_dict
+            #sector_dict = {
+            #    'sector_key': data.sector_key,
+            #    'percentage': data.percentage
+            #}
+            sectors.append(data.sector_key)
+            #if data.percentage > max_percentage:
+            #    max_percentage = data.percentage
+            #    top_sector = sector_dict
 
         # Add sectors to the response
-        # index_dict['sectors'] = sectors *** COMMENTED THIS OUT SO WE ONLY RETURN THE TOP SECTOR ***
+        index_dict['sectors'] = sectors
 
         # Add top sector to the response
         #index_dict['top_sector'] = top_sector['sector_key'] #REMOVED THIS ATTRIBUTE
-        index_dict['top_sector_percentage'] = top_sector['percentage']
+        #index_dict['top_sector_percentage'] = top_sector['percentage'] #REMOVED THIS ATTRIBUTE
 
         # Fetch top stocks associated with the index
         top_stocks_data = db.session.query(
@@ -219,24 +218,25 @@ def get_index(id):
         top_stocks = []
 
         # ADDED CODE TO FIND THE TOP STOCK
-        top_stock = None
-        max_percentage = 0
+        #top_stock = None
+        #max_percentage = 0
 
         for data in top_stocks_data:
-            stock_dict = {
-                'stock_ticker': data.stock_ticker,
-                'percentage': data.percentage
-            }
-            top_stocks.append(stock_dict)
 
-            if data.percentage > max_percentage:
-                max_percentage = data.percentage
-                top_stock = stock_dict
+            #stock_dict = {
+            #    'stock_ticker': data.stock_ticker,
+            #    'percentage': data.percentage
+            #}
+            top_stocks.append(data.stock_ticker)
+
+            #if data.percentage > max_percentage:
+            #    max_percentage = data.percentage
+            #    top_stock = stock_dict
 
         # Add top stocks to the response
-        # index_dict['top_stocks'] = top_stocks  *** COMMENTED THIS OUT SO WE ONLY RETURN THE TOP STOCK ***
-        index_dict['top_stock'] = top_stock['stock_ticker']
-        index_dict['top_stock_percentage'] = top_stock['percentage']
+        index_dict['top_stocks'] = top_stocks
+        #index_dict['top_stock'] = top_stock['stock_ticker']
+        #index_dict['top_stock_percentage'] = top_stock['percentage']
 
         return jsonify(index_dict), 200
     else:
