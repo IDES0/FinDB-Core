@@ -118,7 +118,7 @@ def index_data_run(symbol):
         return index_data
 
 def start_index():
-    symbols = ['SPY', 'VTI', 'QQQM', 'SOXX', 'VFFSX', 'IVV']
+    symbols = ['SPY', 'IVV', 'VOO', 'QQQ', 'VTI', 'DIA', 'IWM', 'EFA', 'IEMG', 'VEA', 'VUG', 'VO', 'VWO', 'IJH', 'VXUS', 'XLK', 'VGK', 'VNQ', 'VTV', 'VGT', 'ITOT', 'VIG', 'SCHX', 'VXF', 'IWR', 'IJR', 'USMV', 'IWF', 'IJJ']
     #symbols = ['SPY']
     with app.app_context():
         for symbol in symbols:
@@ -126,7 +126,7 @@ def start_index():
             add_index_to_db(index_data)
             
 if __name__ == "__main__":
-    symbols = ['SPY', 'VTI', 'QQQM', 'SOXX', 'VFFSX', 'IVV']
+    symbols = ['SPY', 'IVV', 'VOO', 'QQQ', 'VTI', 'DIA', 'IWM', 'EFA', 'IEMG', 'VEA', 'VUG', 'VO', 'VWO', 'IJH', 'VXUS', 'XLK', 'VGK', 'VNQ', 'VTV', 'VGT', 'ITOT', 'VIG', 'SCHX', 'VXF', 'IWR', 'IJR', 'USMV', 'IWF', 'IJJ']
     #symbols = ['SPY']
     with app.app_context():
         for symbol in symbols:

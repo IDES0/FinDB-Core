@@ -4,14 +4,13 @@ from create_db import app, db, Stock, Index, Sector, index_to_sector, start_db
 from sector_data import sector_data_run
 from index_data import start_index
 from stock_data import stock_data_run, populate_stock_data
-from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, index_to_stock
+from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, stock_to_top_index
 from sqlalchemy import desc
 
-# app = Flask(__name__)
-# start_db()
-# sector_data_run()
-# start_index()
-# populate_stock_data()
+start_db()
+sector_data_run()
+start_index()
+populate_stock_data()
 error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
 
 
@@ -274,6 +273,12 @@ def get_stock(id):
     if stock:
         r = stock.toDict()
         del r['last_30_days_prices']
+        
+        top_indexes = db.session.query(
+            stock_to_top_index).filter_by(stock_ticker=id).all()
+        top_indexes = [data.index_ticker for data in top_indexes]
+        r['Top Indexes'] = top_indexes
+        
         return jsonify(r), 200
     else:
         return jsonify({"message": "Stock not found"}), 404
