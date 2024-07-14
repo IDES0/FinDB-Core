@@ -10,7 +10,7 @@ function StockModelTable() {
     //Flask API call to get data from Stock model
     useEffect(() => {
         fetch("http://localhost:5000/api/stock/").then((res) => res.json().then((json_data) =>
-            setData(json_data)
+            setData(json_data.data)
         )
         );
     }, []);

@@ -10,7 +10,7 @@ function IndexModelTable() {
     //Flask API call to get data from Index model
     useEffect(() => {
         fetch("http://localhost:5000/api/index/").then((res) => res.json().then((json_data) =>
-            setData(json_data)
+            setData(json_data.data)
         )
         );
     }, []);
