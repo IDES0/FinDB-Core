@@ -57,7 +57,7 @@ SECTORS
 @app.get("/api/sector/")
 def get_sectors():
     page = request.args.get('page', type=int, default=1)
-    per_page = request.args.get('per_page', default=5, type=int)
+    per_page = request.args.get('per_page', default=10, type=int)
     sectors = Sector.query.paginate(page=page, per_page=per_page)
     response = []
     for sector in sectors:
@@ -170,7 +170,7 @@ INDEXES
 @app.get("/api/index/")
 def get_indexes():
     page = request.args.get('page', type=int, default=1)
-    per_page = request.args.get('per_page', default=5, type=int)
+    per_page = request.args.get('per_page', default=10, type=int)
     indexes = Index.query.paginate(page=page, per_page=per_page)
     response = []
     for index in indexes:
@@ -250,7 +250,7 @@ STOCKS
 def get_stocks():
     # *** WE NEED TO ADD A CONNECTION FROM STOCK TO INDEX ***
     page = request.args.get('page', type=int, default=1)
-    per_page = request.args.get('per_page', default=5, type=int)
+    per_page = request.args.get('per_page', default=10, type=int)
     stocks = Stock.query.paginate(page=page, per_page=per_page)
     
     response = []
