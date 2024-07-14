@@ -19,7 +19,7 @@ function AboutAccordian() {
             <li><strong>Name:</strong> Mihir Arora </li>
             <li><Image className="img-fluid" src={mihirPhoto} rounded /></li>
             <li><strong>Bio:</strong> I’m an undergraduate Computer Science Major at UT Austin. I hope to use my skills both technologically and personal qualities to solve real-world problems. Through my experiences personally and professionally that my growth as a leader, ability to collaborate in group settings, and strong determination have all contributed to my achievements.</li>
-            <li><strong>Major Responsibilities:</strong> Contributing to the design of the project in order to articulate it within the technical report and also help with implementation. Additionally, I kept track of different issues and features within the gitlab for the project. </li>
+            <li><strong>Major Responsibilities:</strong> Contributing to the design of the project in order to articulate it within the technical report and also help with implementation. Additionally, I kept track of different issues and features within the gitlab for the project. Also helped develop the React frontend. </li>
             <GetStats forTeam={false} user={"aroramihir09"}> </GetStats>
             <li><strong>No. of Unit Test:</strong> 0</li>
           </ul>
@@ -45,7 +45,7 @@ function AboutAccordian() {
             <li><strong>Name:</strong> Joshua Dierker</li>
             <li><Image className="img-fluid" src={joshuaPhoto} rounded /></li>
             <li><strong>Bio:</strong> I am a fifth-year Computer Science major with a Business minor and an Applied Statistical Modeling certificate. I like trying new restaurants and collecting vinyl records and wristwatches in my free time.</li>
-            <li><strong>Major Responsibilities:</strong> API implementation and documentation. App Engine deploys</li>
+            <li><strong>Major Responsibilities:</strong> API implementation and documentation. App Engine deploys and Cloud SQL management</li>
             <GetStats forTeam={false} user={"joshuadierker"}> </GetStats>
             <li><strong>No. of Unit Test:</strong> 0</li>
           </ul>

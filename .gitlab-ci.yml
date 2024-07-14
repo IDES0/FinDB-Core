@@ -25,12 +25,13 @@ before_script:
   - source venv/bin/activate
   - pip install -r ./requirements.txt
 
-# test:
-#   script:
-#     - python -m coverage run -m ./tests/backend.py
+test:
+   script:
+    - python --version 
+#    - python -m coverage run -m ./backend/test_models.py
 #     - coverage html
 #   artifacts:
-#         paths:
+#        paths:
 #             - htmlcov/
 
 # pages:
@@ -43,13 +44,13 @@ before_script:
 #         paths:
 #             - public/
 
-run:
-  script:
+#run:
+#  script:
     # run the command here
-    - python ./backend/stock_data.py
-  artifacts:
-    paths:
-      - build/*
+#    - python ./backend/app.py
+#  artifacts:
+#    paths:
+#      - build/*
 
 
 # deploy:
