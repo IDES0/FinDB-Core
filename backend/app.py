@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request, render_template
-from flask_sqlalchemy import SQLAlchemy
-
+from flask_sqlalchemy import SQLAlchemy, pagination
 from create_db import app, db, Stock, Index, Sector, index_to_sector, start_db
 from sector_data import sector_data_run
 from index_data import start_index
@@ -9,10 +8,10 @@ from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_t
 from sqlalchemy import desc
 
 # app = Flask(__name__)
-start_db()
-sector_data_run()
-start_index()
-populate_stock_data()
+# start_db()
+# sector_data_run()
+# start_index()
+# populate_stock_data()
 error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
 
 
@@ -57,7 +56,9 @@ SECTORS
 
 @app.get("/api/sector/")
 def get_sectors():
-    sectors = Sector.query.all()
+    page = request.args.get('page', type=int, default=1)
+    per_page = request.args.get('per_page', default=5, type=int)
+    sectors = Sector.query.paginate(page=page, per_page=per_page)
     response = []
     for sector in sectors:
         sector_dict = sector.toDict()
@@ -169,14 +170,16 @@ INDEXES
 
 @app.get("/api/index/")
 def get_indexes():
-    indexes = Index.query.all()
+    page = request.args.get('page', type=int, default=1)
+    per_page = request.args.get('per_page', default=5, type=int)
+    indexes = Index.query.paginate(page=page, per_page=per_page)
     response = []
     for index in indexes:
         r = index.toDict()
         del r['last_30_days_prices']
-
         # *** WE NEED ONE MORE ATTRIBUTE FOR INDEX MODEL PAGE! ***
         response.append(r)
+    # pagination = Pagination(page=page, total=len(response), record_name='response')
     return jsonify(response), 200
 
 @app.get("/api/index/<id>")
@@ -207,8 +210,7 @@ def get_index(id):
         # index_dict['sectors'] = sectors *** COMMENTED THIS OUT SO WE ONLY RETURN THE TOP SECTOR ***
 
         # Add top sector to the response
-        # index_dict['top_sector'] = top_sector *** COMMENTED THIS OUT BECAUSE YOU CAN'T RETURN DICT AS AN ATTRIBUTE ***
-        index_dict['top_sector'] = top_sector['sector_key']
+        #index_dict['top_sector'] = top_sector['sector_key'] #REMOVED THIS ATTRIBUTE
         index_dict['top_sector_percentage'] = top_sector['percentage']
 
         # Fetch top stocks associated with the index
@@ -247,12 +249,16 @@ STOCKS
 @app.get("/api/stock/")
 def get_stocks():
     # *** WE NEED TO ADD A CONNECTION FROM STOCK TO INDEX ***
-    stocks = Stock.query.all()
+    page = request.args.get('page', type=int, default=1)
+    per_page = request.args.get('per_page', default=5, type=int)
+    stocks = Stock.query.paginate(page=page, per_page=per_page)
+    
     response = []
     for stock in stocks:
         r = stock.toDict()
         del r['last_30_days_prices']
         response.append(r)
+    
     return jsonify(response), 200
 
 @app.get("/api/stock/<id>")
