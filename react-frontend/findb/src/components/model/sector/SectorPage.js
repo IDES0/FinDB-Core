@@ -25,7 +25,7 @@ function SectorPage() {
     } else if (sectorKey === "financial-services") {
         video = <iframe width="560" height="315" src="https://www.youtube.com/embed/xXStP80NwuM?si=UYZ_zvyCK56tRmue" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     } else if (sectorKey === "healthcare") {
-        video = <iframe width="560" height="315" src="https://www.youtube.com/embed/nkdvvrld5tQ?si=iBX83fBlSFJVqMGH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        video = <iframe width="560" height="315" src="https://www.youtube.com/embed/cM4aep7VXb8?si=edywZ4910I7G3s2I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     } else if (sectorKey === "consumer-cyclical") {
         video = <iframe width="560" height="315" src="https://www.youtube.com/embed/MdhUJWoA-Bc?si=YqiTY9MkGjlpmbdR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     } else if (sectorKey === "communication-services") {
@@ -41,7 +41,7 @@ function SectorPage() {
     } else if (sectorKey === "real-estate") {
         video = <iframe width="560" height="315" src="https://www.youtube.com/embed/WlqYhER9Dd8?si=4ZDkZoCaB8QeRd-p" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     } else if(sectorKey === "utilities") {
-        video = <iframe width="560" height="315" src="https://www.youtube.com/embed/1s375WFZAng?si=yr6tLz9DxRP7zoYm" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        video = <iframe width="560" height="315" src="https://www.youtube.com/embed/dvNOpxS3Mpg?si=vO-NuAB-kF_cjccp" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     } else {
         video = <iframe width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     }
