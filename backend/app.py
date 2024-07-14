@@ -4,7 +4,7 @@ from create_db import app, db, Stock, Index, Sector, index_to_sector, start_db
 from sector_data import sector_data_run
 from index_data import start_index
 from stock_data import stock_data_run, populate_stock_data
-from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks
+from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, index_to_stock
 from sqlalchemy import desc
 
 # app = Flask(__name__)
@@ -96,7 +96,10 @@ def get_sectors():
 
         sector_dict['market_cap_ratio'] = market_cap_ratio
         response.append(sector_dict)
-    return jsonify(response), 200
+    meta = {
+        'pages': sectors.pages
+    }
+    return jsonify({'data': response, 'meta': meta}), 200
 
 @app.get("/api/sector/<id>")
 def get_sector(id):
@@ -179,7 +182,10 @@ def get_indexes():
         # *** WE NEED ONE MORE ATTRIBUTE FOR INDEX MODEL PAGE! ***
         response.append(r)
     # pagination = Pagination(page=page, total=len(response), record_name='response')
-    return jsonify(response), 200
+    meta = {
+        'pages': indexes.pages
+    }
+    return jsonify({'data': response, 'meta': meta}), 200
 
 @app.get("/api/index/<id>")
 def get_index(id):
@@ -193,24 +199,21 @@ def get_index(id):
         sector_data = db.session.query(
             index_to_sector).filter_by(index_ticker=id).all()
         sectors = []
-        #top_sector = None
-        #max_percentage = 0
+        top_sector = None
+        max_percentage = 0
         for data in sector_data:
-            #sector_dict = {
-            #    'sector_key': data.sector_key,
-            #    'percentage': data.percentage
-            #}
             sectors.append(data.sector_key)
-            #if data.percentage > max_percentage:
-            #    max_percentage = data.percentage
-            #    top_sector = sector_dict
+            if data.percentage > max_percentage:
+                max_percentage = data.percentage
+                top_sector = data.sector_key
+
 
         # Add sectors to the response
         index_dict['sectors'] = sectors
 
-        # Add top sector to the response
-        #index_dict['top_sector'] = top_sector['sector_key'] #REMOVED THIS ATTRIBUTE
-        #index_dict['top_sector_percentage'] = top_sector['percentage'] #REMOVED THIS ATTRIBUTE
+        if top_sector:
+            index_dict['top_sector'] = top_sector
+            index_dict['top_sector_percentage'] = max_percentage
 
         # Fetch top stocks associated with the index
         top_stocks_data = db.session.query(
@@ -258,8 +261,12 @@ def get_stocks():
         r = stock.toDict()
         del r['last_30_days_prices']
         response.append(r)
+        
+    meta = {
+        'pages': stocks.pages
+    }
+    return jsonify({'data': response, 'meta': meta}), 200
     
-    return jsonify(response), 200
 
 @app.get("/api/stock/<id>")
 def get_stock(id):
