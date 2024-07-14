@@ -9,24 +9,29 @@ function StockModelTable() {
 
     //Flask API call to get data from Stock model
     useEffect(() => {
-        fetch("https://quantum-yen-427619-c5.lm.r.appspot.com/api/stock/").then((res) => res.json().then((json_data) =>
+        fetch("http://localhost:5000/api/stock/").then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
     }, []);
 
     //Add Stock model data to table element
-    if(data.length != 0) {
-        modelHeaders = Object.keys(data[0]).reverse().map((h) => <th>{h}</th>)
-        for(let i = 0; i < data.length; i++) {
+    if (data.length !== 0) {
+        let header_arr = Object.keys(data[0]).reverse()
+        let index = header_arr.indexOf("industry_key")
+        header_arr.splice(index, 1)
+        modelHeaders = header_arr.map((h) => <th>{h}</th>)
+        for (let i = 0; i < data.length; i++) {
             let th_eles = []
             let arr = Object.keys(data[i]).reverse()
-            for(let j = 0; j < arr.length; j++) {
-                if(arr[j] === "ticker"){
+            for (let j = 0; j < arr.length; j++) {
+                if (arr[j] === "ticker") {
                     // Add link to stock instance
-                    th_eles.push(<td><Link  to={`/stocks/${data[i][arr[j]]}`}>{data[i][arr[j]]}</Link></td>)
+                    th_eles.push(<td><Link to={`/stocks/${data[i][arr[j]]}`}>{data[i][arr[j]]}</Link></td>)
                 } else {
-                    th_eles.push(<td>{data[i][arr[j]]}</td>)
+                    if (arr[j] !== "industry_key") {
+                        th_eles.push(<td>{data[i][arr[j]]}</td>)
+                    }
                 }
             }
             modelEntries.push(<tr>
@@ -45,7 +50,7 @@ function StockModelTable() {
                 </tr>
             </thead>
             <tbody>
-               {modelEntries}
+                {modelEntries}
             </tbody>
         </Table>
     );

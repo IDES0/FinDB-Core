@@ -12,7 +12,7 @@ function SectorPage() {
 
     // Flask API call to get specific instance data from Sector model
     useEffect(() => {
-        fetch(`https://quantum-yen-427619-c5.lm.r.appspot.com/api/sector/${sectorKey}`).then((res) => res.json().then((json_data) =>
+        fetch(`http://localhost:5000/api/sector/${sectorKey}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
@@ -50,10 +50,24 @@ function SectorPage() {
     if (data !== undefined) {
         let list_items = []
         for (let a in data) {
-            if (a === "top_index") {
-                list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/indexes/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
-            } else if (a === "top_stock") {
-                list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/stocks/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
+            if (a === "top_indexes") {
+                let links = []
+                for(let i in data[a]) {
+                    links.push(<div><Link to={`/indexes/${data[a][i]}`}> {data[a][i]} </Link></div>)
+                }
+                list_items.push(<ListGroup.Item>
+                    <strong>{a}: </strong>
+                    {links}
+                </ListGroup.Item>)
+            } else if (a === "top_stocks") {
+                let links = []
+                for(let i in data[a]) {
+                    links.push(<div><Link to={`/stocks/${data[a][i]}`}> {data[a][i]} </Link></div>)
+                }
+                list_items.push(<ListGroup.Item>
+                    <strong>{a}: </strong>
+                    {links}
+                </ListGroup.Item>)
             } else {
                 if (a !== "name" || a !== "sector_key") {
                     list_items.push(<ListGroup.Item><strong>{a}: </strong>{data[a]}</ListGroup.Item>)

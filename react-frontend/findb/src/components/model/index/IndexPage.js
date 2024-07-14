@@ -12,7 +12,7 @@ function IndexPage() {
 
     // Flask API call to get specific instance data from Index model
     useEffect(() => {
-        fetch(`https://quantum-yen-427619-c5.lm.r.appspot.com/api/index/${indexTicker}`).then((res) => res.json().then((json_data) =>
+        fetch(`http://localhost:5000/api/index/${indexTicker}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
@@ -27,9 +27,19 @@ function IndexPage() {
                 for(let i in data[a]) {
                     links.push(<div><Link to={`/sectors/${data[a][i]}`}> {data[a][i]} </Link></div>)
                 }
-                list_items.push(<ListGroup.Item>{links}</ListGroup.Item>)
-            } else if(a === "top_stock") {
-                list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/stocks/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
+                list_items.push(<ListGroup.Item>
+                    <strong>{a}: </strong>
+                    {links}
+                </ListGroup.Item>)
+            } else if(a === "top_stocks") {
+                let links = []
+                for(let i in data[a]) {
+                    links.push(<div><Link to={`/stocks/${data[a][i]}`}> {data[a][i]} </Link></div>)
+                }
+                list_items.push(<ListGroup.Item>
+                    <strong>{a}: </strong>
+                    {links}
+                </ListGroup.Item>)
             } else {
                 if(a !== "ticker") {
                     list_items.push(<ListGroup.Item><strong>{a}: </strong>{data[a]}</ListGroup.Item>)

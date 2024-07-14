@@ -12,24 +12,20 @@ function StockPage() {
 
     // Flask API call to get specific instance data from Stock model
     useEffect(() => {
-        fetch(`https://quantum-yen-427619-c5.lm.r.appspot.com/api/stock/${stockTicker}`).then((res) => res.json().then((json_data) =>
-            setData(json_data)
-        ));
-
-        fetch(`https://quantum-yen-427619-c5.lm.r.appspot.com/api/stock/${stockTicker}`).then((res) => res.json().then((json_data) =>
+        fetch(`http://localhost:5000/api/stock/${stockTicker}`).then((res) => res.json().then((json_data) =>
             setData(json_data)
         ));
     }, []);
 
     //Display information for instance
-    if (data != undefined) {
+    if (data !== undefined) {
         let list_items = []
         for (let a in data) {
-            if (a == "sector_key") {
+            if (a === "sector_key") {
                 // Link to Sector model instance
                 list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/sectors/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
             } else {
-                if (a !== "ticker") {
+                if (a !== "ticker" || a !== "industry_key") {
                     list_items.push(<ListGroup.Item><strong>{a}: </strong>{data[a]}</ListGroup.Item>)
 
                 }
