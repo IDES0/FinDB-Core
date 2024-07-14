@@ -9,7 +9,7 @@ function IndexModelTable() {
 
     //Flask API call to get data from Index model
     useEffect(() => {
-        fetch("http://quantum-yen-427619-c5.lm.r.appspot.com/api/index/").then((res) => res.json().then((json_data) =>
+        fetch("https://quantum-yen-427619-c5.lm.r.appspot.com/api/index/").then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );

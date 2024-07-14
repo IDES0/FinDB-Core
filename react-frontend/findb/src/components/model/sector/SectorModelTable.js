@@ -9,7 +9,7 @@ function SectorModelTable() {
 
     //Flask API call to get data from Sector model
     useEffect(() => {
-        fetch("http://quantum-yen-427619-c5.lm.r.appspot.com/api/sector/").then((res) => res.json().then((json_data) =>
+        fetch("https://quantum-yen-427619-c5.lm.r.appspot.com/api/sector/").then((res) => res.json().then((json_data) =>
             setData(json_data)
         )
         );
