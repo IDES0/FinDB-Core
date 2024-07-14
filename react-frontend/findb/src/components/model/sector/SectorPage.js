@@ -16,7 +16,7 @@ function SectorPage() {
             setData(json_data)
         )
         );
-    });
+    }, []);
 
     let video;
     //Display video for sector

@@ -16,14 +16,18 @@ function IndexPage() {
             setData(json_data)
         )
         );
-    }, []);
+    },[]);
 
     //Display information for instance
-    if (data != undefined) {
+    if (data !== undefined) {
         let list_items = []
         for (let a in data) {
-            if(a === "top_sector") {
-                list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/sectors/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
+            if(a === "sectors") {
+                let links = []
+                for(let i in data[a]) {
+                    links.push(<div><Link to={`/sectors/${data[a][i]}`}> {data[a][i]} </Link></div>)
+                }
+                list_items.push(<ListGroup.Item>{links}</ListGroup.Item>)
             } else if(a === "top_stock") {
                 list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/stocks/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
             } else {
