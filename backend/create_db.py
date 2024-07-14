@@ -10,7 +10,7 @@ app = Flask(__name__)
 # enable CORS for connection to frontend
 CORS(app)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:@localhost:5433/FinDB'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:d123@localhost:5432/findb'
 
 # cloud string pls do not delete!!!
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/sacred-veld-427516-s5:us-central1:findb'
