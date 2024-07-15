@@ -24,7 +24,7 @@ function StockPage() {
             if (a === "sector_key") {
                 // Link to Sector model instance
                 list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/sectors/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
-            } else if (a === "Top Indexes") {
+            } else if (a === "top_indexes") {
                 let links = []
                 for(let i in data[a]) {
                     links.push(<div><Link to={`/indexes/${data[a][i]}`}> {data[a][i]} </Link></div>)

@@ -296,7 +296,7 @@ def get_stock(id):
         top_indexes = db.session.query(
             stock_to_top_index).filter_by(stock_ticker=id).all()
         top_indexes = [data.index_ticker for data in top_indexes]
-        r['Top Indexes'] = top_indexes
+        r['top_indexes'] = top_indexes
 
         return jsonify(r), 200
     else:
