@@ -24,6 +24,15 @@ function StockPage() {
             if (a === "sector_key") {
                 // Link to Sector model instance
                 list_items.push(<ListGroup.Item><strong>{a}: </strong> <Link to={`/sectors/${data[a]}`}> {data[a]} </Link></ListGroup.Item>)
+            } else if (a === "Top Indexes") {
+                let links = []
+                for(let i in data[a]) {
+                    links.push(<div><Link to={`/indexes/${data[a][i]}`}> {data[a][i]} </Link></div>)
+                }
+                list_items.push(<ListGroup.Item>
+                    <strong>{a}: </strong>
+                    {links}
+                </ListGroup.Item>)
             } else {
                 if (a !== "ticker" || a !== "industry_key") {
                     list_items.push(<ListGroup.Item><strong>{a}: </strong>{data[a]}</ListGroup.Item>)
