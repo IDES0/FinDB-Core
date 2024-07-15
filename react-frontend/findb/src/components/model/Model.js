@@ -4,7 +4,7 @@ import SectorModelTable from "./sector/SectorModelTable";
 import IndexModelTable from "./index/IndexModelTable";
 
 function Model(props) {
-    if (props.name === "Stock") {
+    if (props.name === "Stocks") {
         return (
             <div className="Model">
                 <header className="Model-header">
@@ -16,7 +16,7 @@ function Model(props) {
                 </Container>
             </div>
         );
-    } else if (props.name === "Sector") {
+    } else if (props.name === "Sectors") {
         return (
             <div className="Model">
                 <header className="Model-header">
@@ -28,7 +28,7 @@ function Model(props) {
                 </Container>
             </div>
         )
-    } else if (props.name === "Index") {
+    } else if (props.name === "Indexes") {
         return (
             <div className="Model">
                 <header className="Model-header">

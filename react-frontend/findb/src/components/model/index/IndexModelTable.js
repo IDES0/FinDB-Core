@@ -1,23 +1,28 @@
 import Table from 'react-bootstrap/Table';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Pagination from 'react-bootstrap/Pagination';
+import '../PaginationFormat.css'
 
 function IndexModelTable() {
-    const [data, setData] = useState([]);
+    const [apiData, setApiData] = useState([]);
+    const [activePage, setActivePage] = useState(1);
     let modelEntries = [];
     let modelHeaders = [];
 
     //Flask API call to get data from Index model
     useEffect(() => {
-        fetch("http://localhost:5000/api/index/").then((res) => res.json().then((json_data) =>
-            setData(json_data.data)
+        fetch(`http://localhost:5000/api/index/?page=${activePage}`).then((res) => res.json().then((json_data) =>
+            setApiData([json_data.data, json_data.meta])
         )
         );
-    }, []);
+    }, [activePage]);
 
     //Add Index model data to table element
-    if(data.length != 0) {
+    if (apiData.length !== 0) {
+        let data = apiData[0];
         modelHeaders = Object.keys(data[0]).reverse().map((h) => <th>{h}</th>)
+        let entryNumber = activePage === 1 ? 0 : (activePage - 1) * 10
         for(let i = 0; i < data.length; i++) {
             let th_eles = []
             let arr = Object.keys(data[i]).reverse()
@@ -30,24 +35,52 @@ function IndexModelTable() {
                 }
             }
             modelEntries.push(<tr>
-                <td>{i + 1}</td>
+                <td>{entryNumber + 1}</td>
                 {th_eles}
             </tr>)
-
+            entryNumber++;
         }
     }
+
+    let items = [];
+    let paginationBasic;
+    if (apiData.length > 0) {
+        for (let number = 1; number <= apiData[1].pages; number++) {
+            items.push(
+                <Pagination.Item key={number} active={number === activePage}>
+                    <button style={{ border: "none", outline: "none", background: "#FFFFFF" }} onClick={() => setActivePage(number)}>
+                        {number}
+                    </button>
+                </Pagination.Item>
+            );
+        }
+
+        paginationBasic = (
+            <div>
+                <Pagination>{items}</Pagination>
+                <br />
+            </div>
+        );
+    }
+
+
     return (
-        <Table striped bordered hover>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    {modelHeaders}
-                </tr>
-            </thead>
-            <tbody>
-               {modelEntries}
-            </tbody>
-        </Table>
+        <div className='pt-5'>
+            <div className="justify-center">
+                {paginationBasic}
+            </div>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            {modelHeaders}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {modelEntries}
+                    </tbody>
+                </Table>
+        </div>
     );
 }
 
