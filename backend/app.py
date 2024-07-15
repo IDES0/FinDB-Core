@@ -5,18 +5,18 @@ from sector_data import sector_data_run
 from index_data import start_index
 from stock_data import stock_data_run, populate_stock_data
 from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, stock_to_top_index
-from sqlalchemy import desc
+from sqlalchemy import asc, desc
 
-start_db()
-sector_data_run()
-start_index()
-populate_stock_data()
+# start_db()
+# sector_data_run()
+# start_index()
+# populate_stock_data()
 error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
 
 
 @app.route('/dbtest')
 def test_db():
-    Stock()
+    # Stock()
 
     return {"message": "test"}, 200
 
@@ -28,24 +28,6 @@ def index():
     # return render_template('index.html')
     return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
 
-@app.route("/about.html")
-def about():
-    return render_template('about.html')
-
-
-@app.route("/stock-model.html")
-def stock():
-    return render_template('stock-model.html')
-
-
-@app.route("/sector-model.html")
-def sector():
-    return render_template('sector-model.html')
-
-
-@app.route("/index-model.html")
-def index_m():
-    return render_template('index-model.html')
 
 # GET ALL
 
@@ -53,19 +35,30 @@ def index_m():
 SECTORS
 '''
 
+
 @app.get("/api/sector/")
 def get_sectors():
     page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', default=10, type=int)
-    sectors = Sector.query.paginate(page=page, per_page=per_page)
+    sort_by = request.args.get('sort_by', default=None, type=str)
+    sort_order = request.args.get('sort_order', default=asc)
+    if sort_by:
+        if sort_order == 'asc':
+            sectors = Sector.query.order_by(asc(getattr(Sector, sort_by))).paginate(
+                page=page, per_page=per_page)
+        else:
+            sectors = Sector.query.order_by(desc(getattr(Sector, sort_by))).paginate(
+                page=page, per_page=per_page)
+    else:
+        sectors = Sector.query.paginate(page=page, per_page=per_page)
     response = []
     for sector in sectors:
         sector_dict = sector.toDict()
 
         # Fetch top stock for this sector
         top_stock = Stock.query.filter_by(sector_key=sector.sector_key)\
-                                .order_by(desc(Stock.market_cap))\
-                                .first()
+            .order_by(desc(Stock.market_cap))\
+            .first()
         if top_stock:
             sector_dict['top_stock'] = top_stock.toDict()['ticker']
 
@@ -79,8 +72,8 @@ def get_sectors():
 
         # Top 10 stocks in market sector dominance
         top_10_stocks = Stock.query.filter_by(sector_key=sector.sector_key)\
-                                    .order_by(desc(Stock.market_cap))\
-                                    .limit(10)
+            .order_by(desc(Stock.market_cap))\
+            .limit(10)
         combined_market_cap = sum(
             stock.market_cap for stock in top_10_stocks)
 
@@ -100,12 +93,13 @@ def get_sectors():
     }
     return jsonify({'data': response, 'meta': meta}), 200
 
+
 @app.get("/api/sector/<id>")
 def get_sector(id):
     sector = Sector.query.get(id)
     if sector:
         """
-        
+
         I copied and pasted the top stock, top index, and market cap ratio code from the above if statement so
         that the table and instance displayed the same information. Top 10 stocks/indexes formatting is not readable.
 
@@ -129,8 +123,8 @@ def get_sector(id):
 
         # Top 10 stocks in market sector dominance
         top_10_stocks = Stock.query.filter_by(sector_key=sector.sector_key)\
-                                    .order_by(desc(Stock.market_cap))\
-                                    .limit(10)
+            .order_by(desc(Stock.market_cap))\
+            .limit(10)
         combined_market_cap = sum(
             stock.market_cap for stock in top_10_stocks)
 
@@ -145,20 +139,21 @@ def get_sector(id):
 
         sector_dict['market_cap_ratio'] = market_cap_ratio
 
-        
         # Fetch top stocks in this sector sorted by market cap
         sector_dict = sector.toDict()
 
         top_stocks = Stock.query.filter_by(sector_key=sector.sector_key)\
-                                    .order_by(desc(Stock.market_cap))\
-                                    .limit(10).all()              
-        sector_dict['top_stocks'] = [stock.toDict()['ticker'] for stock in top_stocks]
+            .order_by(desc(Stock.market_cap))\
+            .limit(10).all()
+        sector_dict['top_stocks'] = [stock.toDict()['ticker']
+                                     for stock in top_stocks]
         # Join Index with index_to_sector and order by percentage
         top_indexes = Index.query.join(index_to_sector, Index.ticker == index_to_sector.c.index_ticker)\
-                                        .filter(index_to_sector.c.sector_key.like(sector.sector_key))\
-                                        .order_by(desc(index_to_sector.c.percentage))\
-                                        .limit(10).all()
-        sector_dict['top_indexes'] = [index.toDict()['ticker'] for index in top_indexes]
+            .filter(index_to_sector.c.sector_key.like(sector.sector_key))\
+            .order_by(desc(index_to_sector.c.percentage))\
+            .limit(10).all()
+        sector_dict['top_indexes'] = [index.toDict()['ticker']
+                                      for index in top_indexes]
 
         return jsonify(sector_dict), 200
     else:
@@ -169,11 +164,22 @@ def get_sector(id):
 INDEXES
 '''
 
+
 @app.get("/api/index/")
 def get_indexes():
     page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', default=10, type=int)
-    indexes = Index.query.paginate(page=page, per_page=per_page)
+    sort_by = request.args.get('sort_by', default=None, type=str)
+    sort_order = request.args.get('sort_order', default=asc)
+    if sort_by:
+        if sort_order == 'asc':
+            indexes = Index.query.order_by(asc(getattr(Index, sort_by))).paginate(
+                page=page, per_page=per_page)
+        else:
+            indexes = Index.query.order_by(desc(getattr(Index, sort_by))).paginate(
+                page=page, per_page=per_page)
+    else:
+        indexes = Index.query.paginate(page=page, per_page=per_page)
     response = []
     for index in indexes:
         r = index.toDict()
@@ -186,7 +192,8 @@ def get_indexes():
     }
     return jsonify({'data': response, 'meta': meta}), 200
 
-@app.get("/api/index/<id>")
+
+@ app.get("/api/index/<id>")
 def get_index(id):
     # Query the index_to_sector table to get associated sectors for the given index id
     index = Index.query.get(id)
@@ -206,7 +213,6 @@ def get_index(id):
                 max_percentage = data.percentage
                 top_sector = data.sector_key
 
-
         # Add sectors to the response
         index_dict['sectors'] = sectors
 
@@ -220,52 +226,65 @@ def get_index(id):
         top_stocks = []
 
         # ADDED CODE TO FIND THE TOP STOCK
-        #top_stock = None
-        #max_percentage = 0
+        # top_stock = None
+        # max_percentage = 0
 
         for data in top_stocks_data:
 
-            #stock_dict = {
+            # stock_dict = {
             #    'stock_ticker': data.stock_ticker,
             #    'percentage': data.percentage
-            #}
+            # }
             top_stocks.append(data.stock_ticker)
 
-            #if data.percentage > max_percentage:
+            # if data.percentage > max_percentage:
             #    max_percentage = data.percentage
             #    top_stock = stock_dict
 
         # Add top stocks to the response
         index_dict['top_stocks'] = top_stocks
-        #index_dict['top_stock'] = top_stock['stock_ticker']
-        #index_dict['top_stock_percentage'] = top_stock['percentage']
+        # index_dict['top_stock'] = top_stock['stock_ticker']
+        # index_dict['top_stock_percentage'] = top_stock['percentage']
 
         return jsonify(index_dict), 200
     else:
         return jsonify({"message": "Index not found"}), 404
 
+
 '''
 STOCKS
 '''
 
-@app.get("/api/stock/")
+
+@ app.get("/api/stock/")
 def get_stocks():
     # *** WE NEED TO ADD A CONNECTION FROM STOCK TO INDEX ***
     page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', default=10, type=int)
-    stocks = Stock.query.paginate(page=page, per_page=per_page)
-    
+    sort_by = request.args.get('sort_by', default=None, type=str)
+    sort_order = request.args.get('sort_order', default=asc)
+    if sort_by:
+        if sort_order == 'asc':
+            stocks = Stock.query.order_by(asc(getattr(Stock, sort_by))).paginate(
+                page=page, per_page=per_page)
+        else:
+            stocks = Stock.query.order_by(desc(getattr(Stock, sort_by))).paginate(
+                page=page, per_page=per_page)
+    else:
+        stocks = Stock.query.paginate(page=page, per_page=per_page)
+    # stocks = Stock.query.paginate(page=page, per_page=per_page)
+
     response = []
     for stock in stocks:
         r = stock.toDict()
         del r['last_30_days_prices']
         response.append(r)
-        
+
     meta = {
         'pages': stocks.pages
     }
     return jsonify({'data': response, 'meta': meta}), 200
-    
+
 
 @app.get("/api/stock/<id>")
 def get_stock(id):
@@ -273,12 +292,12 @@ def get_stock(id):
     if stock:
         r = stock.toDict()
         del r['last_30_days_prices']
-        
+
         top_indexes = db.session.query(
             stock_to_top_index).filter_by(stock_ticker=id).all()
         top_indexes = [data.index_ticker for data in top_indexes]
         r['Top Indexes'] = top_indexes
-        
+
         return jsonify(r), 200
     else:
         return jsonify({"message": "Stock not found"}), 404
@@ -336,6 +355,8 @@ def post_resource(name):
         return jsonify({"message": error_msg}), 400
 
 # PUT
+
+
 @app.put("/api/<name>/<id>")
 def put_resource(name, id):
     if id is None:
