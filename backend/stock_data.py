@@ -37,6 +37,7 @@ def get_stock_data(symbol):
         'last_30_days_prices': past_prices,
         'top_10_indexes': get_top_ten_index(yq_ticker)
     }
+    print(stock_data)
     return stock_data
 
 def add_stock_to_db(stock_data):

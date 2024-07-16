@@ -53,6 +53,9 @@ def get_top_sectors(ticker):
                     sectors_list.append({'sector': index.strip().lower().replace('_', '-'), 'weight': weight * 100})
     return sectors_list
 
+def get_ytd_return(ticker):
+    return ticker.info.get('ytdReturn')
+
 def get_index_data(symbol):
     yq_ticker = yq.Ticker(symbol)
     yf_ticker = yf.Ticker(symbol)
@@ -62,12 +65,14 @@ def get_index_data(symbol):
     name = get_name(yf_ticker)
     top_stocks = get_top_ten_stock(yq_ticker)
     top_sectors = get_top_sectors(yq_ticker)
-    
+    ytd_return = get_ytd_return(yf_ticker)
+    print(ytd_return)
     index_data = {
         'ticker': symbol,
         'name': name,
         'nav': cur_price,
         'total_asset': total_assets,
+        'ytd_return': ytd_return,
         'last_30_days_prices': past_prices,
         'top_ten_holdings': top_stocks,
         'top_sectors': top_sectors
@@ -81,6 +86,7 @@ def add_index_to_db(index_data):
             ticker=index_data['ticker'],
             name=index_data['name'],
             nav=index_data['nav'],
+            ytd_return=index_data['ytd_return'],
             total_asset=index_data['total_asset'],
             last_30_days_prices=index_data['last_30_days_prices']
         )
@@ -126,8 +132,8 @@ def start_index():
             add_index_to_db(index_data)
             
 if __name__ == "__main__":
-    symbols = ['SPY', 'IVV', 'VOO', 'QQQ', 'VTI', 'DIA', 'IWM', 'EFA', 'IEMG', 'VEA', 'VUG', 'VO', 'VWO', 'IJH', 'VXUS', 'XLK', 'VGK', 'VNQ', 'VTV', 'VGT', 'ITOT', 'VIG', 'SCHX', 'VXF', 'IWR', 'IJR', 'USMV', 'IWF', 'IJJ']
-    #symbols = ['SPY']
+    #symbols = ['SPY', 'IVV', 'VOO', 'QQQ', 'VTI', 'DIA', 'IWM', 'EFA', 'IEMG', 'VEA', 'VUG', 'VO', 'VWO', 'IJH', 'VXUS', 'XLK', 'VGK', 'VNQ', 'VTV', 'VGT', 'ITOT', 'VIG', 'SCHX', 'VXF', 'IWR', 'IJR', 'USMV', 'IWF', 'IJJ']
+    symbols = ['SPY']
     with app.app_context():
         for symbol in symbols:
             index_data = get_index_data(symbol)

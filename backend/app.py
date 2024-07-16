@@ -6,13 +6,13 @@ from index_data import start_index
 from stock_data import stock_data_run, populate_stock_data
 from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, stock_to_top_index
 from sqlalchemy import asc, desc
-
+import os
 # start_db()
 # sector_data_run()
 # start_index()
 # populate_stock_data()
 error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
-
+print("STARTING")
 
 @app.route('/dbtest')
 def test_db():
@@ -291,7 +291,7 @@ def get_stock(id):
     stock = Stock.query.get(id)
     if stock:
         r = stock.toDict()
-        del r['last_30_days_prices']
+        r['last_30_days_prices']
 
         top_indexes = db.session.query(
             stock_to_top_index).filter_by(stock_ticker=id).all()
@@ -427,4 +427,13 @@ def delete_resource(name, id):
 
 # host='0.0.0.0' to make the server publicly available.
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
+    # start_db()
+    # print("DB RESET COMPLETE")
+    # sector_data_run()
+    # print("SECTOR COMPLETE")
+    # start_index()
+    # print("INDEX COMPLETE")
+    # populate_stock_data()
+    # print("ALL MODELS COMPLETE ||| RUNNING SERVER")
+    
+    app.run(debug=True,use_reloader=False, host='0.0.0.0')
