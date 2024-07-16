@@ -199,11 +199,10 @@ def get_index(id):
     index = Index.query.get(id)
     if index:
         index_dict = index.toDict()
-        del index_dict['last_30_days_prices']  # Remove unwanted field
+        # del index_dict['last_30_days_prices']  # Remove unwanted field
 
         # Fetch sectors associated with the index
-        sector_data = db.session.query(
-            index_to_sector).filter_by(index_ticker=id).all()
+        sector_data = db.session.query(index_to_sector).filter_by(index_ticker=id).all()
         sectors = []
         top_sector = None
         max_percentage = 0
