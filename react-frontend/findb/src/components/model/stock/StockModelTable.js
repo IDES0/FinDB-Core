@@ -8,77 +8,95 @@ function StockModelTable() {
     const [apiData, setApiData] = useState([]);
     const [activePage, setActivePage] = useState(1);
 
-    // Fetch data from the Stock model API
+    // Flask API call to get data from Stock model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/stock/?page=${activePage}`)
-            .then((res) => res.json())
-            .then((json_data) => setApiData([json_data.data, json_data.meta]));
+        fetch(`http://localhost:5000/api/stock/?page=${activePage}`).then((res) => res.json().then((json_data) =>
+            setApiData([json_data.data, json_data.meta])
+        ));
     }, [activePage]);
 
-    // Generate table headers and entries
-    const generateTableContent = () => {
-        if (apiData.length === 0) return { headers: [], entries: [] };
+    let modelEntries = [];
+    let modelHeaders = [];
 
-        const data = apiData[0];
-        const preHeaderArr = Object.keys(data[0]).filter((key) => key !== 'industry_key').reverse();
-
-        const headers = ['#', ...preHeaderArr.map((key) => key.replace(/_/g, ' ').toUpperCase())];
-
-        const entryNumber = activePage === 1 ? 0 : (activePage - 1) * 10;
-        const entries = data.map((entry, index) => {
-            const cells = preHeaderArr.map((key) => {
-                if (key === 'ticker') {
-                    return (
-                        <td key={key}>
-                            <Link to={`/stocks/${entry[key]}`}>{entry[key]}</Link>
-                        </td>
-                    );
+    // Add Stock model data to table element
+    if (apiData.length !== 0) {
+        let data = apiData[0];
+        
+        let pre_header_arr = Object.keys(data[0]).reverse();
+        let index = pre_header_arr.indexOf("industry_key");
+        pre_header_arr.splice(index, 1);
+        let header_arr = []
+        for (let i = 0; i < pre_header_arr.length; i++) {
+            let h = pre_header_arr[i];
+            let split_h = h.split("_");
+            let final = "";
+            for (let j = 0; j < split_h.length; j++) {
+                let sh = split_h[j];
+                final += sh.toUpperCase() + " ";
+            }
+            final = final.substring(0, final.length - 1);
+            header_arr.push(final);
+        }
+        modelHeaders = header_arr.map((h) => <th key={h}>{h}</th>);
+        
+        let entryNumber = activePage === 1 ? 0 : (activePage - 1) * 10;
+        
+        for (let i = 0; i < data.length; i++) {
+            let th_eles = [];
+            let arr = Object.keys(data[i]).reverse();
+            for (let j = 0; j < arr.length; j++) {
+                if (arr[j] === "ticker") {
+                    // Add link to stock instance
+                    th_eles.push(<td key={j}><Link to={`/stocks/${data[i][arr[j]]}`}>{data[i][arr[j]]}</Link></td>);
+                } else {
+                    if (arr[j] !== "industry_key") {
+                        th_eles.push(<td key={j}>{data[i][arr[j]]}</td>);
+                    }
                 }
-                return <td key={key}>{entry[key]}</td>;
-            });
+            }
+            modelEntries.push(<tr key={i}>
+                <td>{entryNumber + 1}</td>
+                {th_eles}
+            </tr>);
+            entryNumber++;
+        }
+    }
 
-            return (
-                <tr key={index}>
-                    <td>{entryNumber + index + 1}</td>
-                    {cells}
-                </tr>
+    let items = [];
+    let paginationBasic;
+    if (apiData.length > 0) {
+        for (let number = 1; number <= apiData[1].pages; number++) {
+            items.push(
+                <Pagination.Item key={number} active={number === activePage} onClick={() => setActivePage(number)}>
+                    {number}
+                </Pagination.Item>
             );
-        });
+        }
 
-        return { headers, entries };
-    };
-
-    const { headers, entries } = generateTableContent();
-
-    // Generate pagination
-    const paginationItems = apiData.length > 0 ? Array.from({ length: apiData[1].pages }, (_, index) => (
-        <Pagination.Item key={index + 1} active={index + 1 === activePage}>
-            <button
-                style={{ border: 'none', outline: 'none', background: 'transparent', color: 'white' }}
-                onClick={() => setActivePage(index + 1)}
-            >
-                {index + 1}
-            </button>
-        </Pagination.Item>
-    )) : [];
+        paginationBasic = (
+            <div className="pagination-container">
+                <Pagination>{items}</Pagination>
+                <br />
+            </div>
+        );
+    }
 
     return (
-        <div className="pt-5" style={{ backgroundColor: '#1e1e1e', color: 'white' }}>
-            <div className="justify-center mb-3">
-                <Pagination>{paginationItems}</Pagination>
+        <div className='pt-5'>
+            <div className="justify-center">
+                {paginationBasic}
             </div>
-            <Table striped bordered hover variant="dark">
-                <thead>
-                    <tr>
-                        {headers.map((header, index) => (
-                            <th key={index}>{header}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {entries}
-                </tbody>
-            </Table>
+                <Table striped bordered hover variant="dark">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            {modelHeaders}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {modelEntries}
+                    </tbody>
+                </Table>
         </div>
     );
 }

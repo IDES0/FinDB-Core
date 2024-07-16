@@ -79,3 +79,22 @@ h1, h2, p, strong {
 .bg-body-tertiary {
   background-color: #1e1e1e !important;
 }
+
+button {
+  color: white;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.pagination .page-item {
+  margin: 0 2px;
+}
+
+.pagination .page-item .page-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+}
