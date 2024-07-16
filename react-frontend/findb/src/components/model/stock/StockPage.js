@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
+import Table from 'react-bootstrap/Table';
 import HistoricalChart from './HistoricalChart';
 
 function StockPage() {
@@ -13,6 +14,21 @@ function StockPage() {
             .then((res) => res.json())
             .then((json_data) => setData(json_data));
     }, [stockTicker]);
+
+    // Utility function to simplify large numbers
+    const formatNumber = (num) => {
+        if (num >= 1e12) {
+            return (num / 1e12).toFixed(2) + 'T';
+        } else if (num >= 1e9) {
+            return (num / 1e9).toFixed(2) + 'B';
+        } else if (num >= 1e6) {
+            return (num / 1e6).toFixed(2) + 'M';
+        } else if (num >= 1e3) {
+            return (num / 1e3).toFixed(2) + 'K';
+        } else {
+            return num;
+        }
+    };
 
     return (
         <div style={{ backgroundColor: '#1e1e1e', color: 'white', padding: '20px', borderRadius: '10px' }}>
@@ -27,19 +43,23 @@ function StockPage() {
                         <HistoricalChart data={data.last_30_days_prices} />
                     </div>
                     <div style={{ marginBottom: '10px' }}>
-                        <p><strong>Market Cap: </strong>{data.market_cap}</p>
+                        <p><strong>Market Cap: </strong>{formatNumber(data.market_cap)}</p>
                         <p><strong>Sector: </strong><Link to={`/sectors/${data.sector_key}`} style={{ color: '#1e90ff' }}>{data.sector_key}</Link></p>
                         <p><strong>Industry: </strong>{data.industry_key}</p>
                     </div>
-                    <div>
-                        <p><strong>Top Indexes: </strong>
-                            {data.top_indexes.map((index, idx) => (
-                                <span key={idx}>
-                                    {idx > 0 && ', '}
-                                    <Link to={`/indexes/${index}`} style={{ color: '#1e90ff' }}>{index}</Link>
-                                </span>
-                            ))}
-                        </p>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ width: '12%' }}>
+                            <h4>Top Indexes</h4>
+                            <Table striped bordered hover variant="dark" size="sm">
+                                <tbody>
+                                    {data.top_indexes.map((index, idx) => (
+                                        <tr key={idx}>
+                                            <td><Link to={`/indexes/${index}`} style={{ color: '#1e90ff' }}>{index}</Link></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </div>
                     </div>
                 </Container>
             )}
