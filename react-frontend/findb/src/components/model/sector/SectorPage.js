@@ -63,7 +63,7 @@ function SectorPage() {
                 <Container>
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
                         <h1 style={{ color: 'white', marginRight: '10px' }}>{data.name}</h1>
-                        <h2 style={{ color: 'white', fontSize: '1em' }}>{formatNumber(data.market_cap)}</h2>
+                        <h2 style={{ color: 'white', fontSize: '1em' }}> Market Cap: {formatNumber(data.market_cap)}</h2>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
                         <div style={{ width: '45%' }}>
