@@ -5,7 +5,7 @@ from sector_data import sector_data_run
 from index_data import start_index
 from stock_data import stock_data_run, populate_stock_data
 from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, stock_to_top_index
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, or_
 import os
 # start_db()
 # sector_data_run()
@@ -13,6 +13,7 @@ import os
 # populate_stock_data()
 error_msg = "ERROR: specify the model in the endpoint. eg /api/model"
 print("STARTING")
+
 
 @app.route('/dbtest')
 def test_db():
@@ -41,16 +42,71 @@ def get_sectors():
     page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', default=10, type=int)
     sort_by = request.args.get('sort_by', default=None, type=str)
-    sort_order = request.args.get('sort_order', default=asc)
-    if sort_by:
-        if sort_order == 'asc':
-            sectors = Sector.query.order_by(asc(getattr(Sector, sort_by))).paginate(
-                page=page, per_page=per_page)
+    sort_order = request.args.get('sort_order', default=None, type=str)
+    q = request.args.get('q', default=None, type=str)
+    q_in = request.args.get('q_in', default=None, type=str)
+    search_cols = [
+        'sector.name',
+        'sector.sector_key'
+    ]
+
+    sectors = Sector.query
+    final_cond = []
+    if q:
+        # search all
+        conds = []
+        for col in Sector.__table__.columns:
+            if str(col) not in search_cols:
+                continue
+            else:
+                conds.append(col.ilike(f"%{q}%"))
+        final_cond = or_(*conds)
+
+    if q_in:
+        """
+        Search specific attr, sort
+        """
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                sectors = Sector.query.filter(
+                    getattr(Sector, q_in).ilike(f"%{q}%")).order_by(asc(getattr(Sector, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                sectors = Sector.query.filter(
+                    getattr(Sector, q_in).ilike(f"%{q}%")).order_by(desc(getattr(Sector, sort_by))).paginate(
+                    page=page, per_page=per_page)
         else:
-            sectors = Sector.query.order_by(desc(getattr(Sector, sort_by))).paginate(
+            sectors = Sector.query.filter(
+                getattr(Sector, q_in).ilike(f"%{q}%")).paginate(
+                    page=page, per_page=per_page)
+    elif q:
+        """
+        Search all str attrs, sort
+        """
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                sectors = Sector.query.filter(final_cond).order_by(asc(getattr(Sector, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                sectors = Sector.query.filter(final_cond).order_by(desc(getattr(Sector, sort_by))).paginate(
+                    page=page, per_page=per_page)
+        else:
+            sectors = Sector.query.filter(final_cond).paginate(
                 page=page, per_page=per_page)
     else:
-        sectors = Sector.query.paginate(page=page, per_page=per_page)
+        """
+        Don't search just sort
+        """
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                sectors = Sector.query.order_by(asc(getattr(Sector, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                sectors = Sector.query.order_by(desc(getattr(Sector, sort_by))).paginate(
+                    page=page, per_page=per_page)
+        else:
+            sectors = Sector.query.paginate(
+                page=page, per_page=per_page)
     response = []
     for sector in sectors:
         sector_dict = sector.toDict()
@@ -170,16 +226,61 @@ def get_indexes():
     page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', default=10, type=int)
     sort_by = request.args.get('sort_by', default=None, type=str)
-    sort_order = request.args.get('sort_order', default=asc)
-    if sort_by:
-        if sort_order == 'asc':
-            indexes = Index.query.order_by(asc(getattr(Index, sort_by))).paginate(
-                page=page, per_page=per_page)
+    sort_order = request.args.get('sort_order', default=None, type=str)
+    q = request.args.get('q', default=None, type=str)
+    q_in = request.args.get('q_in', default=None, type=str)
+    search_cols = [
+        'index.name',
+        'index.ticker'
+    ]
+
+    indexes = Index.query
+    final_cond = []
+    if q:
+        # search all
+        conds = []
+        for col in Index.__table__.columns:
+            if str(col) not in search_cols:
+                continue
+            else:
+                conds.append(col.ilike(f"%{q}%"))
+        final_cond = or_(*conds)
+    if q_in:
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                indexes = Index.query.filter(
+                    getattr(Index, q_in).ilike(f"%{q}%")).order_by(asc(getattr(Index, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                indexes = Index.query.filter(
+                    getattr(Index, q_in).ilike(f"%{q}%")).order_by(desc(getattr(Index, sort_by))).paginate(
+                    page=page, per_page=per_page)
         else:
-            indexes = Index.query.order_by(desc(getattr(Index, sort_by))).paginate(
+            indexes = Index.query.filter(
+                getattr(Index, q_in).ilike(f"%{q}%")).paginate(
+                page=page, per_page=per_page)
+    elif q:
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                indexes = Index.query.filter(final_cond).order_by(asc(getattr(Index, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                indexes = Index.query.filter(final_cond).order_by(desc(getattr(Index, sort_by))).paginate(
+                    page=page, per_page=per_page)
+        else:
+            indexes = Index.query.filter(final_cond).paginate(
                 page=page, per_page=per_page)
     else:
-        indexes = Index.query.paginate(page=page, per_page=per_page)
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                indexes = Index.query.order_by(asc(getattr(Index, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                indexes = Index.query.order_by(desc(getattr(Index, sort_by))).paginate(
+                    page=page, per_page=per_page)
+        else:
+            indexes = Index.query.paginate(
+                page=page, per_page=per_page)
     response = []
     for index in indexes:
         r = index.toDict()
@@ -202,7 +303,8 @@ def get_index(id):
         # del index_dict['last_30_days_prices']  # Remove unwanted field
 
         # Fetch sectors associated with the index
-        sector_data = db.session.query(index_to_sector).filter_by(index_ticker=id).all()
+        sector_data = db.session.query(
+            index_to_sector).filter_by(index_ticker=id).all()
         sectors = []
         top_sector = None
         max_percentage = 0
@@ -261,17 +363,62 @@ def get_stocks():
     page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', default=10, type=int)
     sort_by = request.args.get('sort_by', default=None, type=str)
-    sort_order = request.args.get('sort_order', default=asc)
-    if sort_by:
-        if sort_order == 'asc':
-            stocks = Stock.query.order_by(asc(getattr(Stock, sort_by))).paginate(
-                page=page, per_page=per_page)
+    sort_order = request.args.get('sort_order', default=None, type=str)
+    q = request.args.get('q', default=None, type=str)
+    q_in = request.args.get('q_in', default=None, type=str)
+    search_cols = [
+        'stock.name',
+        'stock.ticker',
+        'stock.industry_key',
+        'stock.sector_key'
+    ]
+    stocks = Stock.query
+    final_cond = []
+    if q:
+        # search all
+        conds = []
+        for col in Stock.__table__.columns:
+            if str(col) not in search_cols:
+                continue
+            else:
+                conds.append(col.ilike(f"%{q}%"))
+        final_cond = or_(*conds)
+    if q_in:
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                stocks = Stock.query.filter(
+                    getattr(Stock, q_in).ilike(f"%{q}%")).order_by(asc(getattr(Stock, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                stocks = Stock.query.filter(
+                    getattr(Stock, q_in).ilike(f"%{q}%")).order_by(desc(getattr(Stock, sort_by))).paginate(
+                    page=page, per_page=per_page)
         else:
-            stocks = Stock.query.order_by(desc(getattr(Stock, sort_by))).paginate(
+            stocks = Stock.query.filter(
+                getattr(Stock, q_in).ilike(f"%{q}%")).paginate(
+                page=page, per_page=per_page)
+    elif q:
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                stocks = Stock.query.filter(final_cond).order_by(asc(getattr(Stock, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                stocks = Stock.query.filter(final_cond).order_by(desc(getattr(Stock, sort_by))).paginate(
+                    page=page, per_page=per_page)
+        else:
+            stocks = Stock.query.filter(final_cond).paginate(
                 page=page, per_page=per_page)
     else:
-        stocks = Stock.query.paginate(page=page, per_page=per_page)
-    # stocks = Stock.query.paginate(page=page, per_page=per_page)
+        if sort_by:
+            if sort_order == 'asc' or not sort_order:
+                stocks = Stock.query.order_by(asc(getattr(Stock, sort_by))).paginate(
+                    page=page, per_page=per_page)
+            else:
+                stocks = Stock.query.order_by(desc(getattr(Stock, sort_by))).paginate(
+                    page=page, per_page=per_page)
+        else:
+            stocks = Stock.query.paginate(
+                page=page, per_page=per_page)
 
     response = []
     for stock in stocks:
@@ -434,5 +581,5 @@ if __name__ == "__main__":
     # print("INDEX COMPLETE")
     # populate_stock_data()
     # print("ALL MODELS COMPLETE ||| RUNNING SERVER")
-    
-    app.run(debug=True,use_reloader=False, host='0.0.0.0')
+
+    app.run(debug=True, use_reloader=False, host='0.0.0.0')

@@ -1,9 +1,10 @@
-#stock_data.py
+# stock_data.py
 import yfinance as yf
 import yahooquery as yq
 from datetime import date, timedelta
 from create_db import app, db, Stock, Sector, Index, Industry, stock_to_top_index
 from fuzzywuzzy import process
+
 
 def get_historical(ticker, days):
     start_date = date.today() - timedelta(days=days)
@@ -11,6 +12,7 @@ def get_historical(ticker, days):
     data = ticker.history(start=start_date, end=end_date)
     data['Mid'] = ((data['Open'] + data['Close']) / 2).round(2)
     return data['Mid'].tolist()
+
 
 def get_top_ten_index(ticker):
     try:
@@ -22,6 +24,7 @@ def get_top_ten_index(ticker):
     except Exception as e:
         print(f"Error {ticker.ticker}: {e}")
         return []
+
 
 def get_stock_data(symbol):
     ticker = yf.Ticker(symbol)
@@ -37,8 +40,9 @@ def get_stock_data(symbol):
         'last_30_days_prices': past_prices,
         'top_10_indexes': get_top_ten_index(yq_ticker)
     }
-    print(stock_data)
+    # print(stock_data)
     return stock_data
+
 
 def add_stock_to_db(stock_data):
     sector_key = stock_data['sector_key']
@@ -47,10 +51,12 @@ def add_stock_to_db(stock_data):
         sector = Sector(sector_key=sector_key, name=sector_key)
         db.session.add(sector)
         db.session.commit()
-    
-    industry = Industry.query.filter_by(industry_key=stock_data['industry_key']).first()
+
+    industry = Industry.query.filter_by(
+        industry_key=stock_data['industry_key']).first()
     if industry is None and stock_data['industry_key']:
-        industry = Industry(industry_key=stock_data['industry_key'], name=stock_data['industry_key'])
+        industry = Industry(
+            industry_key=stock_data['industry_key'], name=stock_data['industry_key'])
         db.session.add(industry)
         db.session.commit()
 
@@ -85,12 +91,15 @@ def add_stock_to_db(stock_data):
                     index = all_indexes[closest_match]
 
         if index:
-            exists = db.session.query(stock_to_top_index).filter_by(stock_ticker=stock.ticker, index_ticker=index.ticker).first()
+            exists = db.session.query(stock_to_top_index).filter_by(
+                stock_ticker=stock.ticker, index_ticker=index.ticker).first()
             if not exists:
-                db.session.execute(stock_to_top_index.insert().values(stock_ticker=stock.ticker, index_ticker=index.ticker))
-    
+                db.session.execute(stock_to_top_index.insert().values(
+                    stock_ticker=stock.ticker, index_ticker=index.ticker))
+
     db.session.commit()
-        
+
+
 def stock_data_run(symbol):
     with app.app_context():
         stock_data = get_stock_data(symbol)
@@ -108,12 +117,15 @@ def stock_data_run(symbol):
 # with app.app_context():
 #     for symbol in symbols:
 #         stock_data = get_stock_data(symbol)
-#         add_stock_to_db(stock_data) 
+#         add_stock_to_db(stock_data)
+
+
 def populate_stock_data():
     with app.app_context():
         tickers = [stock.ticker for stock in Stock.query.all()]
         for ticker in tickers:
-            stock_data_run(ticker)        
+            stock_data_run(ticker)
+
 
 if __name__ == "__main__":
     populate_stock_data()

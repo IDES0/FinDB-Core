@@ -9,12 +9,12 @@ from sqlalchemy import inspect
 app = Flask(__name__)
 # enable CORS for connection to frontend
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/findb'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/postgres'
 
 # cloud string pls do not delete!!!
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/sacred-veld-427516-s5:us-central1:findb'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/quantum-yen-427619-c5:us-central1:findb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/quantum-yen-427619-c5:us-central1:findb'
 
 db = SQLAlchemy(app)
 
@@ -22,35 +22,35 @@ db = SQLAlchemy(app)
 
 # Index
 index_to_stock = db.Table('index_to_stock',  # For full Stock List from Index (Only a few should be populated)
-                            db.Column('index_ticker', db.String(50), db.ForeignKey(
-                                'index.ticker'), primary_key=True),
-                            db.Column('stock_ticker', db.String(50),
+                          db.Column('index_ticker', db.String(50), db.ForeignKey(
+                              'index.ticker'), primary_key=True),
+                          db.Column('stock_ticker', db.String(50),
                                     db.ForeignKey('stock.ticker')),
-                            db.Column('percentage', db.Float)  # Weight
-                            )
+                          db.Column('percentage', db.Float)  # Weight
+                          )
 index_to_top_stocks = db.Table('index_to_top_stocks',  # Top Stocks Scraped from Index Scraped (All Indexes Need this)
-                                db.Column('index_ticker', db.String(50), db.ForeignKey(
-                                    'index.ticker'), primary_key=True),
-                                db.Column('stock_ticker', db.String(50), db.ForeignKey(
-                                    'stock.ticker'), primary_key=True),
-                                # Weight of the stock in the index
-                                db.Column('percentage', db.Float)
-                                )
+                               db.Column('index_ticker', db.String(50), db.ForeignKey(
+                                   'index.ticker'), primary_key=True),
+                               db.Column('stock_ticker', db.String(50), db.ForeignKey(
+                                   'stock.ticker'), primary_key=True),
+                               # Weight of the stock in the index
+                               db.Column('percentage', db.Float)
+                               )
 index_to_sector = db.Table('index_to_sector',
-                                db.Column('index_ticker', db.String(50),
-                                            db.ForeignKey('index.ticker')),
-                                db.Column('sector_key', db.String(50),
-                                            db.ForeignKey('sector.sector_key')),
-                                db.Column('percentage', db.Float)
-                                )
+                           db.Column('index_ticker', db.String(50),
+                                     db.ForeignKey('index.ticker')),
+                           db.Column('sector_key', db.String(50),
+                                     db.ForeignKey('sector.sector_key')),
+                           db.Column('percentage', db.Float)
+                           )
 
 # Stock
 stock_to_top_index = db.Table('stock_to_top_index',
-                                    db.Column('stock_ticker', db.String(
+                              db.Column('stock_ticker', db.String(
                                         50), db.ForeignKey('stock.ticker')),
-                                    db.Column('index_ticker', db.String(
+                              db.Column('index_ticker', db.String(
                                         50), db.ForeignKey('index.ticker'))
-                                    )
+                              )
 
 # Sector
 sector_to_top_stocks = db.Table('sector_to_top_stocks',  # Top Stocks Scraped from Index Scraped (All Indexes Need this)
@@ -62,33 +62,33 @@ sector_to_top_stocks = db.Table('sector_to_top_stocks',  # Top Stocks Scraped fr
                                 db.Column('percentage', db.Float)
                                 )
 sector_to_top_index = db.Table('sector_to_top_index',  # Top Stocks Scraped from Index Scraped (All Indexes Need this)
-                                db.Column('sector_key', db.String(50), db.ForeignKey(
-                                    'sector.sector_key'), primary_key=True),
-                                db.Column('index_ticker', db.String(50), db.ForeignKey(
-                                    'index.ticker'), primary_key=True),
-                                # Weight of the index in the index
-                                db.Column('percentage', db.Float)
-                                )
+                               db.Column('sector_key', db.String(50), db.ForeignKey(
+                                   'sector.sector_key'), primary_key=True),
+                               db.Column('index_ticker', db.String(50), db.ForeignKey(
+                                   'index.ticker'), primary_key=True),
+                               # Weight of the index in the index
+                               db.Column('percentage', db.Float)
+                               )
 
 # Industry
 industry_to_top_stocks = db.Table('industry_to_top_stocks',  # Top Stocks Scraped from Index Scraped (All Indexes Need this)
-                                    db.Column('industry_key', db.String(50), db.ForeignKey(
-                                        'industry.industry_key'), primary_key=True),
-                                    db.Column('stock_ticker', db.String(50), db.ForeignKey(
-                                        'stock.ticker'), primary_key=True),
-                                    # Weight of the stock in the index
-                                    db.Column('percentage', db.Float)
-                                    )
+                                  db.Column('industry_key', db.String(50), db.ForeignKey(
+                                      'industry.industry_key'), primary_key=True),
+                                  db.Column('stock_ticker', db.String(50), db.ForeignKey(
+                                      'stock.ticker'), primary_key=True),
+                                  # Weight of the stock in the index
+                                  db.Column('percentage', db.Float)
+                                  )
 
 # Sector <--> Industry
 correlation_sector_industry = db.Table('correlation_sector_industry',
-                                        db.Column('sector_key', db.String(50), db.ForeignKey(
-                                            'sector.sector_key'), primary_key=True),
-                                        db.Column('industry', db.String(50), db.ForeignKey(
-                                            'industry.industry_key'), primary_key=True),
-                                        # Percentage of the stock in the index
-                                        db.Column('percentage', db.Float)
-                                        )
+                                       db.Column('sector_key', db.String(50), db.ForeignKey(
+                                           'sector.sector_key'), primary_key=True),
+                                       db.Column('industry', db.String(50), db.ForeignKey(
+                                           'industry.industry_key'), primary_key=True),
+                                       # Percentage of the stock in the index
+                                       db.Column('percentage', db.Float)
+                                       )
 
 # MODELS :
 
