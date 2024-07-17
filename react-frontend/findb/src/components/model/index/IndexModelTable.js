@@ -3,10 +3,15 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Pagination from 'react-bootstrap/Pagination';
 import '../PaginationFormat.css';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
 function IndexModelTable() {
     const [apiData, setApiData] = useState([]);
     const [activePage, setActivePage] = useState(1);
+    const [sortBy, setSortBy] = useState("")
+    const [sortOrder, setSortOrder] = useState("")
 
     // Utility function to simplify large numbers
     const formatNumber = (num) => {
@@ -25,10 +30,10 @@ function IndexModelTable() {
 
     // Flask API call to get data from Index model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/index/?page=${activePage}`).then((res) => res.json().then((json_data) =>
+        fetch(`http://localhost:5000/api/index/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}`).then((res) => res.json().then((json_data) =>
             setApiData([json_data.data, json_data.meta])
         ));
-    }, [activePage]);
+    }, [activePage, sortBy, sortOrder]);
 
     // Add Index model data to table element
     const modelEntries = apiData.length && apiData[0].length ? apiData[0].map((index, idx) => (
@@ -41,6 +46,27 @@ function IndexModelTable() {
         </tr>
     )) : [];
 
+    //Sort dropdowns
+    const sortButtons = (<ButtonGroup className='pb-3'>
+        <DropdownButton as={ButtonGroup} title="Sort By" id="bg-nested-dropdown">
+            <Dropdown.Item eventKey="1" onClick={() => setSortBy("ticker")}>Ticker</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item eventKey="2" onClick={() => setSortBy("name")}>Name</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item eventKey="3" onClick={() => setSortBy("nav")}>NAV</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item eventKey="4" onClick={() => setSortBy("total_asset")}>Total Asset</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item eventKey="5" onClick={() => setSortBy("ytd_return")}>YTD Return</Dropdown.Item>
+        </DropdownButton>
+
+        <DropdownButton as={ButtonGroup} title="Sort Order" id="bg-nested-dropdown">
+            <Dropdown.Item eventKey="1" onClick={() => setSortOrder("asc")}>Ascending</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item eventKey="2" onClick={() => setSortOrder("des")}>Descending</Dropdown.Item>
+        </DropdownButton>
+    </ButtonGroup>)
+
     // Prepare pagination
     const paginationItems = apiData.length && apiData[1] && apiData[1].pages ? Array.from({ length: apiData[1].pages }, (_, number) => (
         <Pagination.Item key={number + 1} active={number + 1 === activePage} onClick={() => setActivePage(number + 1)}>
@@ -50,6 +76,9 @@ function IndexModelTable() {
 
     return (
         <div className='pt-5'>
+            <div>
+                {sortButtons}
+            </div>
             <div className="justify-center">
                 <Pagination>{paginationItems}</Pagination>
                 <br />
