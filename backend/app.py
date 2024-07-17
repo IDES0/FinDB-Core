@@ -4,7 +4,7 @@ from create_db import app, db, Stock, Index, Sector, index_to_sector, start_db
 from sector_data import sector_data_run
 from index_data import start_index
 from stock_data import stock_data_run, populate_stock_data
-from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, stock_to_top_index
+from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, stock_to_top_index, correlation_sector_industry
 from sqlalchemy import asc, desc, or_
 import os
 # start_db()
@@ -30,11 +30,122 @@ def index():
     return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
 
 
-# GET ALL
+@app.route("/api/search")
+def search_all_models():
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get('per_page', default=10, type=int)
+    sort_by = request.args.get('sort_by', default=None, type=str)
+    sort_order = request.args.get('sort_order', default=None, type=str)
+    q = request.args.get('q', default=None, type=str)
+    q_in = request.args.get('q_in', default=None, type=str)
+    models = {
+        Sector: "sector",
+        Index: "index",
+        Stock: "stock",
+    }
 
-'''
-SECTORS
-'''
+    search_cols = {
+        'sector': [
+            'sector.name',
+            'sector.sector_key'
+        ],
+        'index': [
+            'index.name',
+            'index.ticker'
+        ],
+        'stock': [
+            'stock.name',
+            'stock.ticker',
+            'stock.industry_key',
+            'stock.sector_key'
+        ],
+    }
+    response_dict = {}
+    meta_dict = {}
+    sectors = Sector.query
+    indexes = Index.query
+    stocks = Stock.query
+    final_cond = []
+    res = {"results": [], "total": 0}
+    if q:
+        # search all
+        conds = []
+        for table in models.keys():
+            print(f"******TABLE: {table}******")
+            query = table.query
+            for col in table.__table__.columns:
+                if str(col) not in search_cols[models[table]]:
+                    continue
+                else:
+                    conds.append(col.ilike(f"%{q}%"))
+            final_cond = or_(*conds)
+            # filter by category ***********do we need?
+            # if q_in:
+            #     final_condition = and_(
+            #         final_condition,
+            #         func.array_to_string(table.categories, " ").ilike(f"%{category}%"),
+            #     )
+
+            query = table.query.filter(final_cond)
+            print(f"******TABLE: {query.__table__}******")
+
+            # sectors = Sector.query.filter(final_cond).paginate(
+            #     page=page, per_page=per_page)
+            # indexes = Index.query.filter(final_cond).paginate(
+            #     page=page, per_page=per_page)
+            # stocks = Stock.query.filter(final_cond).paginate(
+            #     page=page, per_page=per_page)
+            records = [row.toDict() for row in query]
+            for i in range(len(records)):
+                records[i]["model"] = models[table]
+            res["results"] += records
+            res["total"] += len(records)
+
+            # response = []
+            # for i in query:
+            #     i = i.toDict()
+            #     if i['last_30_days_prices']:
+            #         del i['last_30_days_prices']
+            #     response.append(i)
+            # response_dict[models[table]] = response
+            # meta_dict[models[table]] = {'pages': query.pages,
+            #                             'total_instances': query.total}
+            # response = []
+            # for i in indexes:
+            #     response.append(i.toDict())
+            # response_dict['indexes'] = response
+            # meta_dict['indexes'] = {'pages': indexes.pages,
+            #                         'total_instances': indexes.total}
+            # response = []
+            # for i in stocks:
+            #     response.append(i.toDict())
+            # response_dict['stocks'] = response
+            # meta_dict['stocks'] = {'pages': stocks.pages,
+            #                        'total_instances': stocks.total}
+
+    def paginate(arr, page_size):
+        try:
+            page_size = int(page_size)
+        except:
+            page_size = 20
+        res = []
+        index = -1
+        cnt = page_size
+        for k in arr:
+            if cnt == page_size:
+                res.append([])
+                cnt = 0
+                index += 1
+            res[index].append(k)
+            cnt += 1
+        return res
+    res['results'] = paginate(res['results'], per_page)
+    return jsonify(res)
+    # return jsonify({'data': response_dict, 'meta': meta_dict})
+
+    '''
+        SECTORS
+    '''
 
 
 @app.get("/api/sector/")
@@ -99,56 +210,68 @@ def get_sectors():
         """
         if sort_by:
             if sort_order == 'asc' or not sort_order:
-                sectors = Sector.query.order_by(asc(getattr(Sector, sort_by))).paginate(
-                    page=page, per_page=per_page)
+                if sort_by == "percentage":
+                    # Join with correlation_sector_industry and sort by percentage
+                    sectors = sectors.join(correlation_sector_industry, Sector.sector_key == correlation_sector_industry.c.sector_key) \
+                        .order_by(asc(correlation_sector_industry.c.percentage)) \
+                        .paginate(page=page, per_page=per_page)
+                else:
+                    sectors = sectors.order_by(asc(getattr(Sector, sort_by))).paginate(
+                        page=page, per_page=per_page)
             else:
-                sectors = Sector.query.order_by(desc(getattr(Sector, sort_by))).paginate(
-                    page=page, per_page=per_page)
+                if sort_by == "percentage":
+                    # Join with correlation_sector_industry and sort by percentage
+                    sectors = sectors.join(correlation_sector_industry, Sector.sector_key == correlation_sector_industry.c.sector_key) \
+                        .order_by(desc(correlation_sector_industry.c.percentage)) \
+                        .paginate(page=page, per_page=per_page)
+                else:
+                    sectors = sectors.order_by(desc(getattr(Sector, sort_by))).paginate(
+                        page=page, per_page=per_page)
         else:
-            sectors = Sector.query.paginate(
+            sectors = sectors.paginate(
                 page=page, per_page=per_page)
+        # if sort_by:
+        #     if sort_order == 'asc' or not sort_order:
+        #         sectors = Sector.query.order_by(asc(getattr(Sector, sort_by))).paginate(
+        #             page=page, per_page=per_page)
+        #     else:
+        #         sectors = Sector.query.order_by(desc(getattr(Sector, sort_by))).paginate(
+        #             page=page, per_page=per_page)
+        # else:
+        #     sectors = Sector.query.paginate(
+        #         page=page, per_page=per_page)
     response = []
-    for sector in sectors:
+    for sector in sectors.items:
         sector_dict = sector.toDict()
 
         # Fetch top stock for this sector
-        top_stock = Stock.query.filter_by(sector_key=sector.sector_key)\
-            .order_by(desc(Stock.market_cap))\
+        top_stock = Stock.query.filter_by(sector_key=sector.sector_key) \
+            .order_by(desc(Stock.market_cap)) \
             .first()
         if top_stock:
             sector_dict['top_stock'] = top_stock.toDict()['ticker']
 
         # Fetch top index associated with this sector
-        top_index = Index.query.join(index_to_sector, Index.ticker == index_to_sector.c.index_ticker)\
-            .filter(index_to_sector.c.sector_key == sector.sector_key)\
-            .order_by(desc(index_to_sector.c.percentage))\
+        top_index = Index.query.join(index_to_sector, Index.ticker == index_to_sector.c.index_ticker) \
+            .filter(index_to_sector.c.sector_key == sector.sector_key) \
+            .order_by(desc(index_to_sector.c.percentage)) \
             .first()
         if top_index:
             sector_dict['top_index'] = top_index.toDict()['ticker']
 
-        # Top 10 stocks in market sector dominance
-        top_10_stocks = Stock.query.filter_by(sector_key=sector.sector_key)\
-            .order_by(desc(Stock.market_cap))\
-            .limit(10)
-        combined_market_cap = sum(
-            stock.market_cap for stock in top_10_stocks)
-
-        # Retrieve the total market cap of the entire sector
-        total_market_cap = sector.market_cap
-
-        # Calculate the ratio of combined market cap of the top 10 stocks to the total market cap of the sector
-        if total_market_cap > 0:
-            market_cap_ratio = combined_market_cap / total_market_cap
-        else:
-            market_cap_ratio = 0  # Handling division by zero if there's no market cap data available
-
-        sector_dict['market_cap_ratio'] = market_cap_ratio
+        # Top industry
+        top_industry = db.session.query(correlation_sector_industry).filter_by(
+            sector_key=sector.sector_key).order_by(desc(correlation_sector_industry.c.percentage)).first()
+        if top_industry:
+            sector_dict['top_industry'] = top_industry.industry
+            sector_dict['top_industry_percentage'] = top_industry.percentage
         response.append(sector_dict)
     meta = {
         'pages': sectors.pages,
         'total_instances': sectors.total
     }
     return jsonify({'data': response, 'meta': meta}), 200
+
 
 
 @app.get("/api/sector/<id>")
