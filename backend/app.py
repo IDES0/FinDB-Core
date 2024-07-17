@@ -62,7 +62,7 @@ def get_sectors():
                 conds.append(col.ilike(f"%{q}%"))
         final_cond = or_(*conds)
 
-    if q_in:
+    if q and q_in:
         """
         Search specific attr, sort
         """
@@ -145,7 +145,8 @@ def get_sectors():
         sector_dict['market_cap_ratio'] = market_cap_ratio
         response.append(sector_dict)
     meta = {
-        'pages': sectors.pages
+        'pages': sectors.pages,
+        'total_instances': sectors.total
     }
     return jsonify({'data': response, 'meta': meta}), 200
 
@@ -245,7 +246,10 @@ def get_indexes():
             else:
                 conds.append(col.ilike(f"%{q}%"))
         final_cond = or_(*conds)
-    if q_in:
+    if q and q_in:
+        """
+        Search specific attr, sort
+        """
         if sort_by:
             if sort_order == 'asc' or not sort_order:
                 indexes = Index.query.filter(
@@ -289,7 +293,8 @@ def get_indexes():
         response.append(r)
     # pagination = Pagination(page=page, total=len(response), record_name='response')
     meta = {
-        'pages': indexes.pages
+        'pages': indexes.pages,
+        'total_instances': indexes.total
     }
     return jsonify({'data': response, 'meta': meta}), 200
 
@@ -383,7 +388,10 @@ def get_stocks():
             else:
                 conds.append(col.ilike(f"%{q}%"))
         final_cond = or_(*conds)
-    if q_in:
+    if q and q_in:
+        """
+        Search specific attr, sort
+        """
         if sort_by:
             if sort_order == 'asc' or not sort_order:
                 stocks = Stock.query.filter(
@@ -398,6 +406,7 @@ def get_stocks():
                 getattr(Stock, q_in).ilike(f"%{q}%")).paginate(
                 page=page, per_page=per_page)
     elif q:
+
         if sort_by:
             if sort_order == 'asc' or not sort_order:
                 stocks = Stock.query.filter(final_cond).order_by(asc(getattr(Stock, sort_by))).paginate(
@@ -427,7 +436,8 @@ def get_stocks():
         response.append(r)
 
     meta = {
-        'pages': stocks.pages
+        'pages': stocks.pages,
+        'total_instances': stocks.total
     }
     return jsonify({'data': response, 'meta': meta}), 200
 
