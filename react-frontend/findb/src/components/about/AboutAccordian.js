@@ -13,7 +13,7 @@ function AboutAccordian() {
         <Accordion defaultActiveKey={['0']} alwaysOpen style={{ backgroundColor: '#1e1e1e', color: 'white' }}>
             <Accordion.Item eventKey="0">
                 <Accordion.Header>Mihir Arora</Accordion.Header>
-                <Accordion.Body>
+                <Accordion.Body style={{ backgroundColor: '#71797E', color: 'white' }}>
                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                         <li><strong>Name:</strong> Mihir Arora</li>
                         <li><Image className="img-fluid" src={mihirPhoto} rounded /></li>
@@ -26,7 +26,7 @@ function AboutAccordian() {
             </Accordion.Item>
             <Accordion.Item eventKey="1">
                 <Accordion.Header>Alex Borkowski</Accordion.Header>
-                <Accordion.Body>
+                <Accordion.Body style={{ backgroundColor: '#71797E', color: 'white' }}>
                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                         <li><strong>Name:</strong> Alex Borkowski</li>
                         <li><Image className="img-fluid" src={alexPhoto} rounded /></li>
@@ -39,7 +39,7 @@ function AboutAccordian() {
             </Accordion.Item>
             <Accordion.Item eventKey="2">
                 <Accordion.Header>Joshua Dierker</Accordion.Header>
-                <Accordion.Body>
+                <Accordion.Body style={{ backgroundColor: '#71797E', color: 'white' }}>
                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                         <li><strong>Name:</strong> Joshua Dierker</li>
                         <li><Image className="img-fluid" src={joshuaPhoto} rounded /></li>
@@ -52,7 +52,7 @@ function AboutAccordian() {
             </Accordion.Item>
             <Accordion.Item eventKey="3">
                 <Accordion.Header>Mabel Egbirika</Accordion.Header>
-                <Accordion.Body>
+                <Accordion.Body style={{ backgroundColor: '#71797E', color: 'white' }}>
                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                         <li><strong>Name:</strong> Mabel Egbirika</li>
                         <li><Image className="img-fluid" src={mabelPhoto} rounded /></li>
@@ -65,7 +65,7 @@ function AboutAccordian() {
             </Accordion.Item>
             <Accordion.Item eventKey="4">
             <Accordion.Header>Steven Nguyen</Accordion.Header>
-                <Accordion.Body>
+                <Accordion.Body style={{ backgroundColor: '#71797E', color: 'white' }}>
                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                         <li><strong>Name:</strong> Steven Nguyen</li>
                         <li><Image className="img-fluid" src={stevenPhoto} rounded /></li>
