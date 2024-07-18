@@ -238,11 +238,9 @@ def get_sectors():
             sector_dict['top_index'] = top_index.toDict()['ticker']
 
         # Top industry
-        top_industry = db.session.query(correlation_sector_industry).filter_by(
-            sector_key=sector.sector_key).order_by(desc(correlation_sector_industry.c.percentage)).first()
-        if top_industry:
-            sector_dict['top_industry'] = top_industry.industry
-            sector_dict['top_industry_percentage'] = top_industry.percentage
+        sector_dict['top_industry'] = sector.highest_industry
+        sector_dict['top_industry_percentage'] = sector.highest_industry_percentage
+        
         response.append(sector_dict)
     meta = {
         'pages': sectors.pages,
