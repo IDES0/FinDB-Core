@@ -9,7 +9,7 @@ from sqlalchemy import inspect
 app = Flask(__name__)
 # enable CORS for connection to frontend
 CORS(app)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Post4743!@localhost:5432/postgres'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/findb'
 
 # cloud string pls do not delete!!!
@@ -145,6 +145,9 @@ class Sector(db.Model):
     name = db.Column(db.String(255), nullable=False, unique=True)
     market_cap = db.Column(db.BigInteger)
 
+    highest_industry = db.Column(db.String(255))
+    highest_industry_percentage = db.Column(db.Float)
+    
     industries = db.relationship(
         'Industry', secondary=correlation_sector_industry, back_populates='sectors')
     top_stocks = db.relationship(

@@ -143,6 +143,9 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
     else:
         sector.market_cap = market_cap
 
+    highest_industry = None
+    highest_percentage = None
+
     for industry_data in sector_data["industries"]:
         industry = Industry.query.filter_by(industry_key=industry_data['key']).first()
         if industry is None:
@@ -153,6 +156,10 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
         
         percentage= industry_data.get('percentage', None)
         if percentage is not None:
+            if highest_percentage is None or percentage > highest_percentage:
+                highest_industry = industry_data['name']
+                highest_percentage = percentage
+
             exists = db.session.query(correlation_sector_industry).filter_by(
                 sector_key=sector.sector_key, industry=industry.industry_key).first()
             if not exists:
@@ -162,7 +169,9 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
                 db.session.query(correlation_sector_industry).filter_by(
                     sector_key=sector.sector_key, industry=industry.industry_key).update({"percentage": percentage})
                 
-                
+    sector.highest_industry = highest_industry
+    sector.highest_industry_percentage = highest_percentage
+
     for stock_data in sector_data["largest_companies"]:
         stock = Stock.query.filter_by(ticker=stock_data['Ticker']).first()
         if stock is None:
@@ -184,6 +193,7 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
             db.session.execute(sector_to_top_stocks.insert().values(sector_key=sector.sector_key, stock_ticker=stock.ticker, percentage=percentage))
 
     db.session.commit()
+
 
 # Runs everything
 def sector_data_run():

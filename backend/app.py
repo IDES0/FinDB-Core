@@ -210,36 +210,14 @@ def get_sectors():
         """
         if sort_by:
             if sort_order == 'asc' or not sort_order:
-                if sort_by == "percentage":
-                    # Join with correlation_sector_industry and sort by percentage
-                    sectors = sectors.join(correlation_sector_industry, Sector.sector_key == correlation_sector_industry.c.sector_key) \
-                        .order_by(asc(correlation_sector_industry.c.percentage)) \
-                        .paginate(page=page, per_page=per_page)
-                else:
-                    sectors = sectors.order_by(asc(getattr(Sector, sort_by))).paginate(
-                        page=page, per_page=per_page)
+                sectors = Sector.query.order_by(asc(getattr(Sector, sort_by))).paginate(
+                    page=page, per_page=per_page)
             else:
-                if sort_by == "percentage":
-                    # Join with correlation_sector_industry and sort by percentage
-                    sectors = sectors.join(correlation_sector_industry, Sector.sector_key == correlation_sector_industry.c.sector_key) \
-                        .order_by(desc(correlation_sector_industry.c.percentage)) \
-                        .paginate(page=page, per_page=per_page)
-                else:
-                    sectors = sectors.order_by(desc(getattr(Sector, sort_by))).paginate(
-                        page=page, per_page=per_page)
+                sectors = Sector.query.order_by(desc(getattr(Sector, sort_by))).paginate(
+                    page=page, per_page=per_page)
         else:
-            sectors = sectors.paginate(
+            sectors = Sector.query.paginate(
                 page=page, per_page=per_page)
-        # if sort_by:
-        #     if sort_order == 'asc' or not sort_order:
-        #         sectors = Sector.query.order_by(asc(getattr(Sector, sort_by))).paginate(
-        #             page=page, per_page=per_page)
-        #     else:
-        #         sectors = Sector.query.order_by(desc(getattr(Sector, sort_by))).paginate(
-        #             page=page, per_page=per_page)
-        # else:
-        #     sectors = Sector.query.paginate(
-        #         page=page, per_page=per_page)
     response = []
     for sector in sectors.items:
         sector_dict = sector.toDict()
@@ -706,13 +684,13 @@ def delete_resource(name, id):
 
 # host='0.0.0.0' to make the server publicly available.
 if __name__ == "__main__":
-    # start_db()
-    # print("DB RESET COMPLETE")
-    # sector_data_run()
-    # print("SECTOR COMPLETE")
-    # start_index()
-    # print("INDEX COMPLETE")
-    # populate_stock_data()
-    # print("ALL MODELS COMPLETE ||| RUNNING SERVER")
+    start_db()
+    print("DB RESET COMPLETE")
+    sector_data_run()
+    print("SECTOR COMPLETE")
+    start_index()
+    print("INDEX COMPLETE")
+    populate_stock_data()
+    print("ALL MODELS COMPLETE ||| RUNNING SERVER")
 
     app.run(debug=True, use_reloader=False, host='0.0.0.0')
