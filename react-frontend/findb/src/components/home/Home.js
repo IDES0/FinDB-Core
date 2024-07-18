@@ -8,7 +8,7 @@ import './Home.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import './highcharts-dark-theme';
 
-// Initialize Treemap module
+// Initialize the Treemap module
 Treemap(Highcharts);
 
 const formatNumber = (num) => {
@@ -41,7 +41,7 @@ function Home() {
                 const sectorId = `id_${sectorIndex}`;
                 points.push({
                     id: sectorId,
-                    name: sector.name,
+                    name: `${sector.name} (${(sector.percentage_of_total * 100).toFixed(2)}%)`,
                     color: Highcharts.getOptions().colors[sectorIndex],
                     value: sector.market_cap
                 });
@@ -70,7 +70,7 @@ function Home() {
                         dataLabels: {
                             enabled: true
                         },
-                        borderColor: '#1e1e1e', 
+                        borderColor: '#1e1e1e', // Darken the border lines between sectors
                         borderWidth: 3,
                         levelIsConstant: false
                     }, {
@@ -80,7 +80,7 @@ function Home() {
                                 fontSize: '14px'
                             }
                         },
-                        borderColor: '#1e1e1e',
+                        borderColor: '#1e1e1e', // Darken the border lines between industries
                         borderWidth: 1
                     }],
                     tooltip: {
@@ -107,7 +107,7 @@ function Home() {
 
     return (
         <div className="Home">
-            <PhotoCarousel /> {}
+            <PhotoCarousel /> {/* PhotoCarousel as header */}
             <Container className="pt-5">
                 <h1 style={{color: "#FFFFFF"}}>FinDB</h1>
                 <p>
