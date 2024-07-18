@@ -8,7 +8,7 @@ import './Home.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import './highcharts-dark-theme';
 
-// Initialize the Treemap module
+// Initialize Treemap module
 Treemap(Highcharts);
 
 const formatNumber = (num) => {
@@ -70,7 +70,7 @@ function Home() {
                         dataLabels: {
                             enabled: true
                         },
-                        borderColor: '#1e1e1e', // Darken the border lines between sectors
+                        borderColor: '#1e1e1e', 
                         borderWidth: 3,
                         levelIsConstant: false
                     }, {
@@ -80,7 +80,7 @@ function Home() {
                                 fontSize: '14px'
                             }
                         },
-                        borderColor: '#1e1e1e', // Darken the border lines between industries
+                        borderColor: '#1e1e1e',
                         borderWidth: 1
                     }],
                     tooltip: {
@@ -107,7 +107,7 @@ function Home() {
 
     return (
         <div className="Home">
-            <PhotoCarousel /> {/* PhotoCarousel as header */}
+            <PhotoCarousel /> {}
             <Container className="pt-5">
                 <h1 style={{color: "#FFFFFF"}}>FinDB</h1>
                 <p>
