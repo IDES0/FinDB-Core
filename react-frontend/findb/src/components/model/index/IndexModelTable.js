@@ -8,7 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Highlight from "react-highlighter";
+import Highlighter from 'react-highlight-words';
 
 function IndexModelTable() {
     const [apiData, setApiData] = useState([]);
@@ -48,11 +48,11 @@ function IndexModelTable() {
     // Add Index model data to table element
     const modelEntries = apiData.length && apiData[0].length ? apiData[0].map((index, idx) => (
         <tr key={idx}>
-            <td>{index.ticker ? <Link to={`/indexes/${index.ticker}`} style={{ color: '#1e90ff' }}><Highlight search={filterQuery}>{index.ticker}</Highlight></Link> : index.ticker }</td>
-            <td><Highlight search={filterQuery}>{index.name ? index.name : 'N/A'}</Highlight></td>
-            <td><Highlight search={filterQuery}>{index.nav ? index.nav.toFixed(2) : 'N/A'}</Highlight></td>
-            <td><Highlight search={filterQuery}>{index.total_asset ? formatNumber(index.total_asset) : 'N/A'}</Highlight></td>
-            <td><Highlight search={filterQuery}>{index.ytd_return ? (index.ytd_return * 100).toFixed(2) : 'N/A'}%</Highlight></td>
+            <td>{index.ticker ? <Link to={`/indexes/${index.ticker}`} style={{ color: '#1e90ff' }}><Highlighter searchWords={[filterQuery]} textToHighlight={index.ticker}></Highlighter></Link> : index.ticker }</td>
+            <td><Highlighter searchWords={[filterQuery]} textToHighlight={index.name ? index.name : 'N/A'}></Highlighter></td>
+            <td><Highlighter searchWords={[filterQuery]} textToHighlight={index.nav ? index.nav.toFixed(2) : 'N/A'}></Highlighter></td>
+            <td><Highlighter searchWords={[filterQuery]} textToHighlight={index.total_asset ? formatNumber(index.total_asset) : 'N/A'}></Highlighter></td>
+            <td><Highlighter searchWords={[filterQuery]} textToHighlight={index.ytd_return ? (index.ytd_return * 100).toFixed(2) + '%' : 'N/A'}></Highlighter></td>
         </tr>
     )) : [];
 

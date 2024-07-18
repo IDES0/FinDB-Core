@@ -8,7 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Highlight from "react-highlighter";
+import Highlighter from 'react-highlight-words';
 
 function SectorModelTable() {
     const [apiData, setApiData] = useState([]);
@@ -48,11 +48,11 @@ function SectorModelTable() {
     // Add Sector model data to table element
     const modelEntries = apiData.length && apiData[0].length ? apiData[0].map((sector, index) => (
         <tr key={index}>
-            <td>{sector.sector_key ? <Link to={`/sectors/${sector.sector_key}`} style={{ color: '#1e90ff' }}><Highlight search={filterQuery}>{sector.name}</Highlight></Link> : <Highlight search={filterQuery}>'N/A'</Highlight>}</td>
-            <td><Highlight search={filterQuery}>{sector.market_cap ? formatNumber(sector.market_cap) : 'N/A'}</Highlight></td>
-            <td>{sector.top_index ? <Link to={`/indexes/${sector.top_index}`} style={{ color: '#1e90ff' }}><Highlight search={filterQuery}>{sector.top_index}</Highlight></Link> : 'N/A'}</td>
-            <td>{sector.top_stock ? <Link to={`/stocks/${sector.top_stock}`} style={{ color: '#1e90ff' }}><Highlight search={filterQuery}>{sector.top_stock}</Highlight></Link> : 'N/A'}</td>
-            <td><Highlight search={filterQuery}>{sector.market_cap_ratio ? sector.market_cap_ratio.toFixed(2) : 'N/A'}</Highlight></td>
+            <td>{sector.sector_key ? <Link to={`/sectors/${sector.sector_key}`} style={{ color: '#1e90ff' }}><Highlighter searchWords={[filterQuery]} textToHighlight={sector.name}></Highlighter></Link> : <Highlighter searchWords={[filterQuery]} textToHighlight='N/A'></Highlighter>}</td>
+            <td><Highlighter searchWords={[filterQuery]} textToHighlight={sector.market_cap ? formatNumber(sector.market_cap) : 'N/A'}></Highlighter></td>
+            <td>{sector.top_index ? <Link to={`/indexes/${sector.top_index}`} style={{ color: '#1e90ff' }}><Highlighter searchWords={[filterQuery]} textToHighlight={sector.top_index}></Highlighter></Link> : 'N/A'}</td>
+            <td>{sector.top_stock ? <Link to={`/stocks/${sector.top_stock}`} style={{ color: '#1e90ff' }}><Highlighter searchWords={[filterQuery]} textToHighlight={sector.top_stock}></Highlighter></Link> : 'N/A'}</td>
+            <td><Highlighter searchWords={[filterQuery]} textToHighlight={sector.market_cap_ratio ? sector.market_cap_ratio.toFixed(2) : 'N/A'}></Highlighter></td>
         </tr>
     )) : [];
 
