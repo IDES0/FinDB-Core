@@ -104,7 +104,7 @@ function IndexModelTable() {
                 {sortButtons}
             </div>
             <div>
-                <h1 style={{ color: '#FFFFFF', fontSize: '24px'}}>Total: {numInstances} Stocks</h1>
+                <h1 style={{ color: '#FFFFFF', fontSize: '24px'}}>Total: {numInstances} Indexes</h1>
             </div>
             <div className="justify-center">
                 <Pagination>{paginationItems}</Pagination>
