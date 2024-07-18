@@ -8,7 +8,7 @@ from create_db import app, db, Sector, Industry, Stock, sector_to_top_stocks, co
 from io import StringIO
 
 
-BASE_URL = "https://finance.yahoo.com/sectors/"
+BASE_URL = "https://web.archive.org/web/20240715160036/https://finance.yahoo.com/sectors/"
 NAME_KEY_PAIR = {
     "Technology": "technology",
     "Financial Services":"financial-services",
