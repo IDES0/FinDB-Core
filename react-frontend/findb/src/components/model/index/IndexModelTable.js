@@ -40,6 +40,11 @@ function IndexModelTable() {
         ));
     }, [activePage, sortBy, sortOrder, filterAttribute, filterQuery]);
 
+    let numInstances = 0;
+    if (apiData[1] !== undefined) {
+        numInstances = apiData[1].total_instances
+    }
+
     // Add Index model data to table element
     const modelEntries = apiData.length && apiData[0].length ? apiData[0].map((index, idx) => (
         <tr key={idx}>
@@ -97,6 +102,9 @@ function IndexModelTable() {
             </div>
             <div>
                 {sortButtons}
+            </div>
+            <div>
+                <h1 style={{ color: '#FFFFFF', fontSize: '24px'}}>Total: {numInstances} Stocks</h1>
             </div>
             <div className="justify-center">
                 <Pagination>{paginationItems}</Pagination>

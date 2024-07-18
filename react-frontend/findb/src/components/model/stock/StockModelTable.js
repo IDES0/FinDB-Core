@@ -40,6 +40,11 @@ function StockModelTable() {
         ));
     }, [activePage, sortBy, sortOrder, filterAttribute, filterQuery]);
 
+    let numInstances = 0;
+    if (apiData[1] !== undefined) {
+        numInstances = apiData[1].total_instances
+    }
+
     // Add Stock model data to table element
     const modelEntries = apiData.length && apiData[0].length ? apiData[0].map((stock, idx) => (
         <tr key={idx}>
@@ -165,6 +170,9 @@ function StockModelTable() {
                 <div>
                     {filterButtons}
                 </div>
+            </div>
+            <div>
+                <h1 style={{ color: '#FFFFFF', fontSize: '24px'}}>Total: {numInstances} Stocks</h1>
             </div>
             <div className="justify-center">
                 <Pagination>{paginationItems}</Pagination>
