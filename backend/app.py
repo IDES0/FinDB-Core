@@ -7,6 +7,7 @@ from stock_data import stock_data_run, populate_stock_data
 from create_db import app, db, Stock, Index, Sector, index_to_sector, index_to_top_stocks, stock_to_top_index, correlation_sector_industry
 from sqlalchemy import asc, desc, or_
 import os
+
 # start_db()
 # sector_data_run()
 # start_index()
@@ -28,6 +29,24 @@ def test_db():
 def index():
     # return render_template('index.html')
     return "<p>Use /api/<model> and specify a model to access endpoints!</p>"
+
+@app.route('/api/treemap_data', methods=['GET'])
+def get_treemap_data():
+    # Query the database to get sector and industry data
+    sectors = Sector.query.all()
+    sector_data = []
+    for sector in sectors:
+        sector_dict = sector.toDict()
+        sector_dict['industries'] = []
+        industries = db.session.query(correlation_sector_industry).filter_by(sector_key=sector.sector_key).all()
+        for industry in industries:
+            sector_dict['industries'].append({
+                'industry': industry.industry,
+                'percentage': industry.percentage
+            })
+        sector_data.append(sector_dict)
+
+    return jsonify(sector_data)
 
 
 @app.route("/api/search")
@@ -610,6 +629,7 @@ def post_resource(name):
         return jsonify({"message": error_msg}), 400
 
 # PUT
+
 
 
 @app.put("/api/<name>/<id>")

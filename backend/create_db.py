@@ -9,12 +9,16 @@ from sqlalchemy import inspect
 app = Flask(__name__)
 # enable CORS for connection to frontend
 CORS(app)
+<<<<<<< Updated upstream
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Post4743!@localhost:5432/postgres'
+=======
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/postgres'
+>>>>>>> Stashed changes
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Joshd123@localhost:5432/findb'
 
 # cloud string pls do not delete!!!
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/sacred-veld-427516-s5:us-central1:findb'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/quantum-yen-427619-c5:us-central1:findb'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:db123@/postgres?host=/cloudsql/quantum-yen-427619-c5:us-central1:findb'
 
 db = SQLAlchemy(app)
 
