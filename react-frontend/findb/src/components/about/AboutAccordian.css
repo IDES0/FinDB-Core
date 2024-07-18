@@ -1,14 +1,41 @@
+.Accordion-button {
+    background-color: #1e1e1e !important;
+    color: white !important;
+}
+
+.Accordion-body {
+    background-color: #2e2e2e !important;
+    color: white !important;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+}
 ul {
     list-style-type: none;
+    padding: 0;
 }
 
-.accordion {
-    --bs-accordion-active-color: black;
-    --bs-accordion-active-bg: #ced4da;
-    --bs-accordion-border-color: black
+li {
+    margin-bottom: 10px;
 }
 
-img {
-    height: 200px;
-    width: 50%;
+a {
+    color: #1e90ff !important;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+.table-dark th, .table-dark td {
+    color: white;
+    background-color: #1e1e1e !important;
+    border-color: #333;
+}
+
+.table-dark th {
+    border-bottom: 2px solid #444;
 }

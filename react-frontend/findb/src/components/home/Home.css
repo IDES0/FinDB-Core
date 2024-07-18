@@ -1,6 +1,23 @@
+.Home {
+    background-color: #1e1e1e;
+    color: white;
+    min-height: 100vh;
+}
 
-p {
-    text-align: center;
-    color: #fff; /* Sets the text color to white */
-    font-size: 20px
+.photo-carousel {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.photo-carousel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 0 -200px;
+}
+
+#container {
+    margin-top: 20px;
 }

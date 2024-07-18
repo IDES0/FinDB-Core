@@ -4,11 +4,11 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import json
 import os
-from create_db import app, db, Sector, Industry, Stock, sector_to_top_stocks
+from create_db import app, db, Sector, Industry, Stock, sector_to_top_stocks, correlation_sector_industry
 from io import StringIO
 
 
-BASE_URL = "https://finance.yahoo.com/sectors/"
+BASE_URL = "https://web.archive.org/web/20240715160036/https://finance.yahoo.com/sectors/"
 NAME_KEY_PAIR = {
     "Technology": "technology",
     "Financial Services":"financial-services",
@@ -23,7 +23,7 @@ NAME_KEY_PAIR = {
     "Utilities": "utilities"
 }
 
-
+# converts the number into a float
 def format_number(num):
     if num is None:
         return None
@@ -40,24 +40,43 @@ def format_number(num):
     else:
         return float(num)
 
+# Scrapes industry data
 def scrape_industry(soup):
     industries = []
     industry_section = soup.find('div', class_="container svelte-152j1g3", attrs={"data-testid": "sector-picker"})
+    
     if industry_section:
         industry_rows = industry_section.find_all('div', class_="itm svelte-5qjwyh")
+        
+        # Get the rows from the table to fetch the percentages
+        table_rows = industry_section.find_all('tr', class_="svelte-152j1g3")
+        percentages = {}
+
+        for row in table_rows:
+            name_td = row.find('td', class_="name svelte-152j1g3")
+            percentage_td = row.find('span', class_="svelte-152j1g3")
+            
+            if name_td and percentage_td:
+                industry_name = name_td.text.strip()
+                percentage_str = percentage_td.text.strip().replace('%', '')
+                percentages[industry_name] = float(percentage_str)
 
         for row in industry_rows:
-
             industry_name = row.get('data-value', '')
             industry_key = row.get('data-key', '')
 
+            percentage = percentages.get(industry_name, None)
+            
             if industry_key:
-                industries.append({
+                industry_data = {
                     "name": industry_name,
-                    "key": industry_key
-                })
+                    "key": industry_key,
+                    "percentage": percentage
+                }
+                industries.append(industry_data)
     return industries
 
+# Scrapes ETFs from the table
 def scrape_etf_opportunities(soup):
     etf_opportunities = []
     etf_section = soup.find('div', class_="table-section-container svelte-1dauhxv")
@@ -68,6 +87,7 @@ def scrape_etf_opportunities(soup):
             etf_opportunities = df.to_dict(orient='records')
     return etf_opportunities
 
+# Scrapes sector data
 def scrape_sector_data(sector_url):
     response = requests.get(sector_url)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -96,6 +116,7 @@ def scrape_sector_data(sector_url):
                     row["Ticker"] = ticker
     
     industries = scrape_industry(soup)
+    
     etf_opportunities = scrape_etf_opportunities(soup)
     
     data = {
@@ -107,6 +128,7 @@ def scrape_sector_data(sector_url):
     
     return data
 
+# Puts everything into the db
 def add_sector_to_db(sector_key, sector_name, sector_data):
     sector = Sector.query.filter_by(sector_key=sector_key).first()
     market_cap = format_number(sector_data["market_cap"]) if isinstance(sector_data["market_cap"], str) else sector_data["market_cap"]
@@ -121,6 +143,9 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
     else:
         sector.market_cap = market_cap
 
+    highest_industry = None
+    highest_percentage = None
+
     for industry_data in sector_data["industries"]:
         industry = Industry.query.filter_by(industry_key=industry_data['key']).first()
         if industry is None:
@@ -128,6 +153,24 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
             db.session.add(industry)
         if industry not in sector.industries:
             sector.industries.append(industry)
+        
+        percentage= industry_data.get('percentage', None)
+        if percentage is not None:
+            if highest_percentage is None or percentage > highest_percentage:
+                highest_industry = industry_data['name']
+                highest_percentage = percentage
+
+            exists = db.session.query(correlation_sector_industry).filter_by(
+                sector_key=sector.sector_key, industry=industry.industry_key).first()
+            if not exists:
+                db.session.execute(correlation_sector_industry.insert().values(
+                    sector_key=sector.sector_key, industry=industry.industry_key, percentage=percentage))
+            else:
+                db.session.query(correlation_sector_industry).filter_by(
+                    sector_key=sector.sector_key, industry=industry.industry_key).update({"percentage": percentage})
+                
+    sector.highest_industry = highest_industry
+    sector.highest_industry_percentage = highest_percentage
 
     for stock_data in sector_data["largest_companies"]:
         stock = Stock.query.filter_by(ticker=stock_data['Ticker']).first()
@@ -152,6 +195,7 @@ def add_sector_to_db(sector_key, sector_name, sector_data):
     db.session.commit()
 
 
+# Runs everything
 def sector_data_run():
     with app.app_context():
         for name, key in NAME_KEY_PAIR.items():

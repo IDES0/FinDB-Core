@@ -18,9 +18,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/stocks" element={<Model name={"Stock"}/>} />
-        <Route path="/sectors" element={<Model name={"Sector"} />} />
-        <Route path="/indexes" element={<Model name={"Index"} />} />
+        <Route path="/stocks" element={<Model name={"Stocks"}/>} />
+        <Route path="/sectors" element={<Model name={"Sectors"} />} />
+        <Route path="/indexes" element={<Model name={"Indexes"} />} />
         <Route path="/stocks/:stockTicker" element={<StockPage />} />
         <Route path="/sectors/:sectorKey" element={<SectorPage />} />
         <Route path="/indexes/:indexTicker" element={<IndexPage  />} />
