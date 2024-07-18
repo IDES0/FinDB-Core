@@ -8,6 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Highlight from "react-highlighter";
 
 function StockModelTable() {
     const [apiData, setApiData] = useState([]);
@@ -42,12 +43,12 @@ function StockModelTable() {
     // Add Stock model data to table element
     const modelEntries = apiData.length && apiData[0].length ? apiData[0].map((stock, idx) => (
         <tr key={idx}>
-            <td><Link to={`/stocks/${stock.ticker}`} style={{ color: '#1e90ff' }}>{stock.ticker}</Link></td>
-            <td>{stock.name ? stock.name : 'N/A'}</td>
-            <td>{stock.current_price ? stock.current_price.toFixed(2) : 'N/A'}</td>
-            <td>{stock.market_cap ? formatNumber(stock.market_cap) : 'N/A'}</td>
-            <td>{stock.sector_key ? <Link to={`/sectors/${stock.sector_key}`} style={{ color: '#1e90ff' }}>{stock.sector_key}</Link> : 'N/A'}</td>
-            <td>{stock.industry_key ? stock.industry_key : 'N/A'}</td>
+            <td><Link to={`/stocks/${stock.ticker}`} style={{ color: '#1e90ff' }}><Highlight search={filterQuery}>{stock.ticker}</Highlight></Link></td>
+            <td><Highlight search={filterQuery}>{stock.name ? stock.name : 'N/A'}</Highlight></td>
+            <td><Highlight search={filterQuery}>{stock.current_price ? stock.current_price.toFixed(2) : 'N/A'}</Highlight></td>
+            <td><Highlight search={filterQuery}>{stock.market_cap ? formatNumber(stock.market_cap) : 'N/A'}</Highlight></td>
+            <td><Highlight search={filterQuery}>{stock.sector_key ? <Link to={`/sectors/${stock.sector_key}`} style={{ color: '#1e90ff' }}>{stock.sector_key}</Link> : 'N/A'}</Highlight></td>
+            <td><Highlight search={filterQuery}>{stock.industry_key ? stock.industry_key : 'N/A'}</Highlight></td>
         </tr>
     )) : [];
 

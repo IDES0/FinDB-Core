@@ -8,6 +8,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Highlight from "react-highlighter";
 
 function SectorModelTable() {
     const [apiData, setApiData] = useState([]);
@@ -42,12 +43,11 @@ function SectorModelTable() {
     // Add Sector model data to table element
     const modelEntries = apiData.length && apiData[0].length ? apiData[0].map((sector, index) => (
         <tr key={index}>
-            <td>{(activePage - 1) * 10 + index + 1}</td>
-            <td>{sector.sector_key ? <Link to={`/sectors/${sector.sector_key}`} style={{ color: '#1e90ff' }}>{sector.name}</Link> : 'N/A' }</td>
-            <td>{sector.market_cap ? formatNumber(sector.market_cap) : 'N/A'}</td>
-            <td>{sector.top_index ? <Link to={`/indexes/${sector.top_index}`} style={{ color: '#1e90ff' }}>{sector.top_index}</Link> : 'N/A'}</td>
-            <td>{sector.top_stock ? <Link to={`/stocks/${sector.top_stock}`} style={{ color: '#1e90ff' }}>{sector.top_stock}</Link> : 'N/A'}</td>
-            <td>{sector.market_cap_ratio ? sector.market_cap_ratio.toFixed(2) : 'N/A'}</td>
+            <td>{sector.sector_key ? <Link to={`/sectors/${sector.sector_key}`} style={{ color: '#1e90ff' }}><Highlight search={filterQuery}>{sector.name}</Highlight></Link> : <Highlight search={filterQuery}>'N/A'</Highlight>}</td>
+            <td><Highlight search={filterQuery}>{sector.market_cap ? formatNumber(sector.market_cap) : 'N/A'}</Highlight></td>
+            <td>{sector.top_index ? <Link to={`/indexes/${sector.top_index}`} style={{ color: '#1e90ff' }}><Highlight search={filterQuery}>{sector.top_index}</Highlight></Link> : 'N/A'}</td>
+            <td>{sector.top_stock ? <Link to={`/stocks/${sector.top_stock}`} style={{ color: '#1e90ff' }}><Highlight search={filterQuery}>{sector.top_stock}</Highlight></Link> : 'N/A'}</td>
+            <td><Highlight search={filterQuery}>{sector.market_cap_ratio ? sector.market_cap_ratio.toFixed(2) : 'N/A'}</Highlight></td>
         </tr>
     )) : [];
 
@@ -99,7 +99,6 @@ function SectorModelTable() {
             <Table striped bordered hover variant="dark">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Name</th>
                         <th>Market Cap</th>
                         <th>Top Index</th>
