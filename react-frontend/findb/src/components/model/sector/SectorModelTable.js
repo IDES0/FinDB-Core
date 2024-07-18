@@ -6,12 +6,16 @@ import '../PaginationFormat.css';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
 function SectorModelTable() {
     const [apiData, setApiData] = useState([]);
     const [activePage, setActivePage] = useState(1);
     const [sortBy, setSortBy] = useState("")
     const [sortOrder, setSortOrder] = useState("")
+    const [filterQuery, setFilterQuery] = useState("")
+    const [filterAttribute, setFilterAttribute] = useState("")
 
     // Utility function to simplify large numbers
     const formatNumber = (num) => {
@@ -30,20 +34,20 @@ function SectorModelTable() {
 
     // Flask API call to get data from Sector model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/sector/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}`).then((res) => res.json().then((json_data) =>
+        fetch(`http://localhost:5000/api/sector/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}&q=${filterQuery}&q_in=${filterAttribute}`).then((res) => res.json().then((json_data) =>
             setApiData([json_data.data, json_data.meta])
         ));
-    }, [activePage, sortBy, sortOrder]);
+    }, [activePage, sortBy, sortOrder, filterQuery, filterAttribute]);
 
     // Add Sector model data to table element
     const modelEntries = apiData.length && apiData[0].length ? apiData[0].map((sector, index) => (
         <tr key={index}>
             <td>{(activePage - 1) * 10 + index + 1}</td>
-            <td><Link to={`/sectors/${sector.sector_key}`} style={{ color: '#1e90ff' }}>{sector.name}</Link></td>
-            <td>{formatNumber(sector.market_cap)}</td>
-            <td><Link to={`/indexes/${sector.top_index}`} style={{ color: '#1e90ff' }}>{sector.top_index}</Link></td>
-            <td><Link to={`/stocks/${sector.top_stock}`} style={{ color: '#1e90ff' }}>{sector.top_stock}</Link></td>
-            <td>{sector.market_cap_ratio.toFixed(2)}</td>
+            <td>{sector.sector_key ? <Link to={`/sectors/${sector.sector_key}`} style={{ color: '#1e90ff' }}>{sector.name}</Link> : 'N/A' }</td>
+            <td>{sector.market_cap ? formatNumber(sector.market_cap) : 'N/A'}</td>
+            <td>{sector.top_index ? <Link to={`/indexes/${sector.top_index}`} style={{ color: '#1e90ff' }}>{sector.top_index}</Link> : 'N/A'}</td>
+            <td>{sector.top_stock ? <Link to={`/stocks/${sector.top_stock}`} style={{ color: '#1e90ff' }}>{sector.top_stock}</Link> : 'N/A'}</td>
+            <td>{sector.market_cap_ratio ? sector.market_cap_ratio.toFixed(2) : 'N/A'}</td>
         </tr>
     )) : [];
 
@@ -62,6 +66,17 @@ function SectorModelTable() {
         </DropdownButton>
     </ButtonGroup>)
 
+    //Add search
+    const search = (
+        <Form onSubmit={(event) => {
+            event.preventDefault()
+            setFilterQuery(event.target.search_query.value)
+            setFilterAttribute("")
+        }}> 
+        <Form.Control type="text" name="search_query" placeholder="Search" /> 
+        <Button variant="primary" type="submit"> Search </Button> 
+        </Form> )
+
     // Prepare pagination
     const paginationItems = apiData.length && apiData[1] && apiData[1].pages ? Array.from({ length: apiData[1].pages }, (_, number) => (
         <Pagination.Item key={number + 1} active={number + 1 === activePage} onClick={() => setActivePage(number + 1)}>
@@ -71,6 +86,9 @@ function SectorModelTable() {
 
     return (
         <div className='pt-5'>
+            <div className='pb-3'>
+                {search}
+            </div>
             <div>
                 {sortButtons}
             </div>
