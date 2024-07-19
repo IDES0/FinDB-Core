@@ -41,7 +41,7 @@ function Home() {
                 const sectorId = `id_${sectorIndex}`;
                 points.push({
                     id: sectorId,
-                    name: `${sector.name} (${(sector.percentage_of_total * 100).toFixed(2)}%)`,
+                    name: `${sector.name}`,
                     color: Highcharts.getOptions().colors[sectorIndex],
                     value: sector.market_cap
                 });
