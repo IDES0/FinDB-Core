@@ -35,7 +35,7 @@ function SectorModelTable() {
 
     // Flask API call to get data from Sector model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/sector/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}&q=${filterQuery}&q_in=${filterAttribute}`).then((res) => res.json().then((json_data) =>
+        fetch(`https://quantum-yen-427619-c5.lm.r.appspot.com/api/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}&q=${filterQuery}&q_in=${filterAttribute}`).then((res) => res.json().then((json_data) =>
             setApiData([json_data.data, json_data.meta])
         ));
     }, [activePage, sortBy, sortOrder, filterQuery, filterAttribute]);
@@ -52,7 +52,8 @@ function SectorModelTable() {
             <td><Highlighter searchWords={[filterQuery]} textToHighlight={sector.market_cap ? formatNumber(sector.market_cap) : 'N/A'}></Highlighter></td>
             <td>{sector.top_index ? <Link to={`/indexes/${sector.top_index}`} style={{ color: '#1e90ff' }}><Highlighter searchWords={[filterQuery]} textToHighlight={sector.top_index}></Highlighter></Link> : 'N/A'}</td>
             <td>{sector.top_stock ? <Link to={`/stocks/${sector.top_stock}`} style={{ color: '#1e90ff' }}><Highlighter searchWords={[filterQuery]} textToHighlight={sector.top_stock}></Highlighter></Link> : 'N/A'}</td>
-            <td><Highlighter searchWords={[filterQuery]} textToHighlight={sector.market_cap_ratio ? sector.market_cap_ratio.toFixed(2) : 'N/A'}></Highlighter></td>
+            <td><Highlighter searchWords={[filterQuery]} textToHighlight={sector.top_industry ? sector.top_industry: 'N/A'}></Highlighter></td>
+            <td><Highlighter searchWords={[filterQuery]} textToHighlight={sector.top_industry ? sector.top_industry_percentage + '%' : 'N/A'}></Highlighter></td>
         </tr>
     )) : [];
 
@@ -111,7 +112,8 @@ function SectorModelTable() {
                         <th>Market Cap</th>
                         <th>Top Index</th>
                         <th>Top Stock</th>
-                        <th>Ratio</th>
+                        <th>Top Industry</th>
+                        <th>Top Industry Percentage</th>
                     </tr>
                 </thead>
                 <tbody>

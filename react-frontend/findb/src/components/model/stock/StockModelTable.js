@@ -36,7 +36,7 @@ function StockModelTable() {
 
     // Flask API call to get data from Stock model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/stock/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}&q=${filterQuery}&q_in=${filterAttribute}`).then((res) => res.json().then((json_data) =>
+        fetch(`https://quantum-yen-427619-c5.lm.r.appspot.com/api/stock/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}&q=${filterQuery}&q_in=${filterAttribute}`).then((res) => res.json().then((json_data) =>
             setApiData([json_data.data, json_data.meta])
         ));
     }, [activePage, sortBy, sortOrder, filterAttribute, filterQuery]);
@@ -53,7 +53,7 @@ function StockModelTable() {
             <td><Highlighter searchWords={[filterQuery]} textToHighlight={stock.name ? stock.name : 'N/A'}></Highlighter></td>
             <td><Highlighter searchWords={[filterQuery]} textToHighlight={stock.current_price ? stock.current_price.toFixed(2) : 'N/A'}></Highlighter></td>
             <td><Highlighter searchWords={[filterQuery]} textToHighlight={stock.market_cap ? formatNumber(stock.market_cap) : 'N/A'}></Highlighter></td>
-            <td><Highlighter searchWords={[filterQuery]} textToHighlight={stock.sector_key ? <Link to={`/sectors/${stock.sector_key}`} style={{ color: '#1e90ff' }}>{stock.sector_key}</Link> : 'N/A'}></Highlighter></td>
+            <td>{stock.sector_key ? <Link to={`/sectors/${stock.sector_key}`} style={{ color: '#1e90ff' }} ><Highlighter searchWords={[filterQuery]} textToHighlight={stock.sector_key}></Highlighter></Link> : 'N/A'}</td>
             <td><Highlighter searchWords={[filterQuery]} textToHighlight={stock.industry_key ? stock.industry_key : 'N/A'}></Highlighter></td>
         </tr>
     )) : [];

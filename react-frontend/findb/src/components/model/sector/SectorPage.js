@@ -24,7 +24,7 @@ function SectorPage() {
 
     // Flask API call to get specific instance data from Sector model
     useEffect(() => {
-        fetch(`http://127.0.0.1:5000/api/sector/${sectorKey}`)
+        fetch(`https://quantum-yen-427619-c5.lm.r.appspot.com/api/sector/${sectorKey}`)
             .then((res) => res.json())
             .then((json_data) => setData(json_data));
     }, [sectorKey]);

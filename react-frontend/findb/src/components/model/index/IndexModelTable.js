@@ -35,7 +35,7 @@ function IndexModelTable() {
 
     // Flask API call to get data from Index model
     useEffect(() => {
-        fetch(`http://localhost:5000/api/index/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}&q=${filterQuery}&q_in=${filterAttribute}`).then((res) => res.json().then((json_data) =>
+        fetch(`https://quantum-yen-427619-c5.lm.r.appspot.com/api/index/?page=${activePage}&sort_by=${sortBy}&sort_order=${sortOrder}&q=${filterQuery}&q_in=${filterAttribute}`).then((res) => res.json().then((json_data) =>
             setApiData([json_data.data, json_data.meta])
         ));
     }, [activePage, sortBy, sortOrder, filterAttribute, filterQuery]);

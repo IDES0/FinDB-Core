@@ -29,7 +29,7 @@ function Home() {
     const [treemapData, setTreemapData] = useState(null);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/api/treemap_data')
+        fetch('https://quantum-yen-427619-c5.lm.r.appspot.com/api/treemap_data')
             .then(response => response.json())
             .then(data => setTreemapData(data));
     }, []);
