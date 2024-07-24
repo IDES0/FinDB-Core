@@ -52,6 +52,10 @@ function AboutListGroup() {
                                 <td>Data is gathered using the yfinance Python library which calls the Yahoo! Finance REST API. Historical data is scraped as the API does not provide it.</td>
                             </tr>
                             <tr>
+                                <td><strong>Presentation Slides Link:</strong></td>
+                                <td><a href="https://speakerdeck.com/mabele/findb-presentation" style={{ color: '#1e90ff' }}>FinDB Presentation</a></td>
+                            </tr>
+                            <tr>
                                 <td colSpan="2">
                                     <GetStats forTeam={true} user={""} />
                                 </td>
