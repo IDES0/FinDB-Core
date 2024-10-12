@@ -1,4 +1,4 @@
-# FinDB: Financial Database Project
+# FinDB Core: Comprehensive Financial Data Storage
 
 **Repository**: [Financial Database (FinDB)](https://github.com/IDES0/Financial-Database-FINDB-0)
 
